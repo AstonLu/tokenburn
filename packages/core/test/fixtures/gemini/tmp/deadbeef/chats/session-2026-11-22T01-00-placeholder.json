@@ -1,0 +1,56 @@
+{
+  "sessionId": "gemini-session-placeholder",
+  "projectHash": "deadbeef",
+  "startTime": "2026-11-22T01:00:00.000Z",
+  "lastUpdated": "2026-11-22T01:10:00.000Z",
+  "messages": [
+    {
+      "id": "m1",
+      "timestamp": "2026-11-22T01:00:00.000Z",
+      "type": "user",
+      "content": "placeholder"
+    },
+    {
+      "id": "m2",
+      "timestamp": "2026-11-22T01:00:05.000Z",
+      "type": "gemini",
+      "content": "placeholder",
+      "thoughts": [],
+      "model": "gemini-2.5-pro",
+      "tokens": {
+        "input": 5000,
+        "output": 400,
+        "cached": 3000,
+        "thoughts": 250,
+        "tool": 10,
+        "total": 5660
+      }
+    },
+    {
+      "id": "m3",
+      "timestamp": "2026-11-22T01:01:00.000Z",
+      "type": "gemini",
+      "content": "placeholder",
+      "model": "gemini-2.5-flash"
+    },
+    {
+      "id": "m4",
+      "timestamp": "2026-11-22T01:02:00.000Z",
+      "type": "gemini",
+      "content": "placeholder",
+      "tokens": {
+        "input": 100,
+        "output": 20
+      }
+    },
+    {
+      "id": "m5",
+      "type": "gemini",
+      "tokens": {
+        "input": 1,
+        "output": 1
+      }
+    },
+    "weird entry"
+  ]
+}

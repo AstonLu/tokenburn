@@ -1,0 +1,24 @@
+{
+  "name": "@pyrometer/core",
+  "version": "0.1.0",
+  "description": "Pyrometer shared parser, aggregation, pricing and titles. Pure ESM, no Node built-ins.",
+  "type": "module",
+  "license": "MIT",
+  "main": "./src/index.js",
+  "types": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./pricing.json": "./pricing.json"
+  },
+  "files": ["src", "pricing.json"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "echo 'core: no build step'",
+    "test": "node --test test/*.test.js",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "typescript": "5.9.3"
+  }
+}
