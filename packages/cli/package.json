@@ -1,0 +1,23 @@
+{
+  "name": "pyrometer",
+  "version": "0.1.0",
+  "description": "Measure the AI tokens you burned in Claude Code, Codex CLI and Gemini CLI. Parses locally, uploads only daily per-model totals.",
+  "type": "module",
+  "license": "MIT",
+  "bin": { "pyrometer": "bin/pyrometer.js" },
+  "files": ["bin", "src", "vendor"],
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "node scripts/vendor-core.mjs",
+    "prepare": "node scripts/vendor-core.mjs",
+    "prepack": "node scripts/vendor-core.mjs",
+    "test": "node scripts/vendor-core.mjs && node --test test/*.test.js",
+    "typecheck": "node scripts/vendor-core.mjs && tsc -p tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@pyrometer/core": "workspace:*",
+    "@types/node": "22.20.5",
+    "typescript": "5.9.3"
+  }
+}
