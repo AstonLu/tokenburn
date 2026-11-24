@@ -12,7 +12,7 @@ Tokenburn measures how many AI tokens a person has burned across Claude Code, Op
 ## Repo layout (pnpm workspace)
 - `packages/core`   pure parser + aggregation + pricing + titles. Exports `createAggregator()`, `parseClaudeLine`, `parseCodexFile`, `parseGeminiFile`, `priceOf(model, usage)`, `PRICING`.
 - `packages/cli`    `npx tokenburn` : scan, print summary + exact payload, ask Y/n, upload, open browser. Flags: `--yes`, `--open`, `--dry-run`, `--json`, `--endpoint`.
-- `apps/web`        Next.js App Router: API routes, public page `/u/[id]`, OG image `/u/[id]/opengraph-image`.
+- `apps/site`       Cloudflare Worker (Hono): API routes, the page at `/` and `/u/[id]`, OG image `/u/[id]/og.png`. Static assets via Workers static assets.
 
 ## Log sources
 - Claude: `~/.claude/projects/**/*.jsonl` (also `$CLAUDE_CONFIG_DIR`). Use only `type=="assistant"` lines with `message.usage`. DEDUPE by `message.id + requestId` (one reply is written as several lines carrying identical usage). Skip model `<synthetic>`.
@@ -39,8 +39,7 @@ Strict zod validation; unknown keys rejected; model must match `^[a-z0-9.\-:_/]{
 Per profile, store rows keyed `deviceId|d|tool|model`. Same key overwrites with field-wise MAX (re-uploads never inflate, and history survives Claude's 30 day cleanup). Profile totals = SUM across devices.
 
 ## Storage
-Upstash Redis via REST (`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`) with plain fetch. If unset, fall back to in-memory store (dev only).
-Keys: `pf:{id}` hash meta, `pr:{id}` hash rows, `lb:usd` zset leaderboard.
+Cloudflare D1 (`apps/site/migrations`): `profiles`, `usage_rows` (primary key profile, device, day, tool, model; merged with a single MAX upsert), `rate_limits`.
 
 ## Read API
 `GET /api/v1/profiles/{id}` -> Summary: totals, usdTotal, perTool, perModel, daily[{d,tokens,usd}], peakDay, streak, cacheHitRate, titles[].

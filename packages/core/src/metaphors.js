@@ -25,6 +25,7 @@ export const ASSUMPTIONS = {
 const HOUR = 3600, DAY = 24, YEAR_H = 8760;
 
 /** Pick the largest unit that keeps the value at 1 or more: years, then days, then hours, then minutes. */
+/** @param {number} hours */
 export function humanDuration(hours) {
   if (hours >= YEAR_H) return { value: hours / YEAR_H, unit: '年' };
   if (hours >= DAY) return { value: hours / DAY, unit: '天' };
@@ -32,6 +33,7 @@ export function humanDuration(hours) {
   return { value: hours * 60, unit: '分鐘' };
 }
 
+/** @param {number} v */
 function round(v) {
   if (v >= 100) return Math.round(v);
   if (v >= 10) return Math.round(v * 10) / 10;
@@ -48,7 +50,7 @@ export function computeMetaphors(s, over = {}) {
   const all = t.in + t.out + t.cr + t.cw;
   const computed = t.in + t.out + t.cw;            // cached reads skip the heavy recompute
   const eff = A.h100Flops * A.utilization;
-  const gpuHours = tokens => (2 * A.modelParams * tokens) / eff / HOUR;
+  const gpuHours = (/** @type {number} */ tokens) => (2 * A.modelParams * tokens) / eff / HOUR;
   const hNoCache = gpuHours(all), hCache = gpuHours(computed);
   const kwh = hCache * A.h100Watts / 1000 * A.pue;
   const outWords = t.out * A.wordsPerToken;

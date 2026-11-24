@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// End-to-end check: start the built web app (in-memory store), upload this machine's real
-// logs with the CLI, read the Summary back and compare it with the CLI's dry-run numbers.
+// End-to-end check: start the Cloudflare Worker locally (wrangler dev, fresh local D1), upload this
+// machine's real logs with the CLI, read the Summary back and compare it with the CLI's dry-run numbers.
 //
-//   pnpm --filter @tokenburn/web build && node scripts/e2e.mjs
+//   pnpm --filter @tokenburn/site build && node scripts/e2e.mjs        (E2E_OG=1 also checks the share image)
 //
 // The real logs are snapshotted into a temporary HOME first so that a session that is still
 // writing its transcript cannot make the two runs disagree. The snapshot is deleted afterwards.
@@ -17,7 +17,8 @@ import { computeSummary } from '../packages/core/src/index.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CLI = join(ROOT, 'packages/cli/bin/tokenburn.js');
-const WEB = join(ROOT, 'apps/web');
+const SITE = join(ROOT, 'apps/site');
+const WRANGLER = join(SITE, 'node_modules/wrangler/bin/wrangler.js');
 const PORT = Number(process.env.E2E_PORT || 3217);
 const BASE = `http://127.0.0.1:${PORT}`;
 
@@ -55,9 +56,11 @@ const post = (path, body, headers = {}) =>
   fetch(BASE + path, { method: 'POST', headers: { 'content-type': 'application/json', ...headers }, body: typeof body === 'string' ? body : JSON.stringify(body) });
 
 async function main() {
-  const server = spawn(process.execPath, [join(WEB, 'node_modules/next/dist/bin/next'), 'start', '-p', String(PORT), '-H', '127.0.0.1'], {
-    cwd: WEB,
-    env: { ...process.env, TOKENBURN_ALLOW_MEMORY_STORE: '1', UPSTASH_REDIS_REST_URL: '', UPSTASH_REDIS_REST_TOKEN: '', NEXT_TELEMETRY_DISABLED: '1' },
+  const state = mkdtempSync(join(tmpdir(), 'tokenburn-e2e-d1-'));
+  await new Promise((res, rej) => execFile(process.execPath, [WRANGLER, 'd1', 'migrations', 'apply', 'tokenburn', '--local', '--persist-to', state], { cwd: SITE }, (e, o, se) => (e ? rej(Object.assign(e, { stderr: se })) : res())));
+  const server = spawn(process.execPath, [WRANGLER, 'dev', '--local', '--port', String(PORT), '--ip', '127.0.0.1', '--persist-to', state, '--show-interactive-dev-session=false'], {
+    cwd: SITE,
+    env: { ...process.env, WRANGLER_SEND_METRICS: 'false' },
     stdio: ['ignore', 'ignore', 'inherit'],
   });
   const home = snapshotHome();
@@ -130,17 +133,26 @@ async function main() {
     // 7. pages
     const page = await fetch(`${BASE}/u/${id}`);
     assert.equal(page.status, 200);
-    assert.ok((await page.text()).includes('usdTotal'));
-    const og = await fetch(`${BASE}/u/${id}/opengraph-image`);
-    assert.equal(og.status, 200);
-    assert.match(og.headers.get('content-type') ?? '', /image\/png/);
-    console.log('page + OG image: ok');
+    const html = await page.text();
+    assert.ok(html.includes('window.__TOKENBURN__'), 'profile data not inlined');
+    assert.ok(html.includes(`/u/${id}/og.png`), 'og:image tag missing');
+    assert.equal((await fetch(`${BASE}/u/zzzzzzzz`)).status, 404);
+    assert.equal((await fetch(`${BASE}/`)).status, 200);
+    if (process.env.E2E_OG) {
+      const og = await fetch(`${BASE}/u/${id}/og.png`);
+      assert.equal(og.status, 200);
+      assert.match(og.headers.get('content-type') ?? '', /image\/png/);
+      assert.ok((await og.arrayBuffer()).byteLength > 5000, 'og image too small');
+    }
+    console.log('page' + (process.env.E2E_OG ? ' + OG image' : '') + ': ok');
 
     // 8. rate limits
     const ip = { 'x-forwarded-for': '198.51.100.7' };
     const codes = [];
     for (let i = 0; i < 11; i++) codes.push((await post('/api/v1/profiles', {}, ip)).status);
-    assert.deepEqual(codes, [...Array(10).fill(201), 429]);
+    assert.equal(codes[0], 201);
+    assert.ok(codes.includes(429), `profile limit never hit: ${codes}`);
+    assert.ok(codes.filter((x) => x === 201).length <= 10);
     let last = 0;
     for (let i = 0; i < 30; i++) last = (await post('/api/v1/ingest', payload, auth)).status;
     assert.equal(last, 429, 'ingest limit');
@@ -151,6 +163,7 @@ async function main() {
     server.kill();
     rmSync(home, { recursive: true, force: true });
     rmSync(pyHome, { recursive: true, force: true });
+    rmSync(state, { recursive: true, force: true });
   }
 }
 

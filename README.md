@@ -88,19 +88,16 @@ All parsers skip unknown shapes and never throw.
 |---|---|
 | `POST /api/v1/profiles` | Body `{}` or empty. Returns `201 { id, claimToken }`. `id` is an 8-character base32 slug. Limited to 10 per hour per IP. |
 | `POST /api/v1/ingest` | Requires `Authorization: Bearer <claimToken>` and a Payload v1 body. Limited to 30 per hour per profile. Returns 400, 401, 413 or 429 on errors. |
-| `GET /api/v1/profiles/{id}` | Returns the Summary, or 404. |
-| `/u/{id}` | Placeholder page that renders the Summary JSON. |
-| `/u/{id}/opengraph-image` | Basic PNG card showing the USD total and the token total. |
+| `GET /api/v1/profiles/{id}` | Returns the Summary plus the daily per-model rows, or 404. |
+| `/` | The Tokenburn page with example data; "讀取我的紀錄" parses your logs in the browser. |
+| `/u/{id}` | The same page with this profile's rows inlined, plus Open Graph and X card tags. |
+| `/u/{id}/og.png` | 1200x630 share image. |
 
-**Storage.** The server uses Upstash Redis over REST with plain `fetch`, configured by `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`. It uses these keys:
+**Hosting and storage.** Everything runs on one Cloudflare Worker (`apps/site`, Hono). Static files are served from Workers static assets; data lives in Cloudflare D1 (`apps/site/migrations`). Tables:
 
-- `pf:{id}`: profile meta, as a hash
-- `pr:{id}`: rows, as a hash
-- `lb:usd`: the USD leaderboard, as a sorted set
-- `tk:{sha256}`: maps a claim-token hash to its profile id
-- `rl:*`: rate-limit counters
-
-If the Upstash variables are unset, an in-memory store is used. That store is for development only: `next start` refuses it unless `TOKENBURN_ALLOW_MEMORY_STORE=1` is set.
+- `profiles`: id, sha256 of the claim token, timestamps, cached USD total
+- `usage_rows`: one row per profile, device, UTC day, tool and model. Uploads merge with a single `INSERT ... ON CONFLICT DO UPDATE SET x = MAX(x, excluded.x)` statement, so re-uploads never inflate and concurrent uploads cannot overwrite each other
+- `rate_limits`: fixed-window counters
 
 ## Running it
 
@@ -109,20 +106,23 @@ Requires Node 18 or later (Node 22 is recommended for development) and pnpm thro
 ```sh
 corepack enable
 pnpm install             # also vendors core into the CLI
-pnpm test                # node:test suites (core + cli)
-pnpm typecheck           # tsc over core JSDoc, cli JSDoc and the web app
-pnpm build               # next build
+pnpm test                # node:test suites (core, cli, site)
+pnpm typecheck           # tsc over core JSDoc, cli JSDoc and the Worker
+pnpm build               # builds apps/site/public/index.html from design/prototype
 
-# web app (in-memory store)
-pnpm --filter @tokenburn/web dev            # http://localhost:3000
+# site + API on a local Worker with a local D1
+pnpm --filter @tokenburn/site dev           # http://localhost:8787
 
 # CLI against it
 node packages/cli/bin/tokenburn.js --dry-run
 node packages/cli/bin/tokenburn.js --yes --open
 TOKENBURN_ENDPOINT=https://example.com node packages/cli/bin/tokenburn.js
 
-# end-to-end: builds must exist; starts `next start`, uploads your real logs, compares numbers
-pnpm --filter @tokenburn/web build && pnpm e2e
+# end-to-end: fresh local D1 + `wrangler dev`, uploads your real logs, compares numbers
+pnpm build && pnpm e2e
+
+# production deploy (needs a Cloudflare API token)
+pnpm --filter @tokenburn/site deploy
 
 # refresh prices (falls back to the litellm wheel on PyPI if GitHub is unreachable)
 pnpm sync-pricing        # or: node scripts/sync-pricing.mjs --from ./model_prices_and_context_window.json
@@ -137,6 +137,7 @@ The fixtures in `packages/core/test/fixtures` are synthetic. `generate.mjs` prod
 ```
 packages/core   pure ESM parser, aggregation, pricing, summary, titles (no Node built-ins)
 packages/cli    `tokenburn` bin, zero runtime deps
-apps/web        Next.js App Router: API routes, /u/[id], OG image
+apps/site       Cloudflare Worker (Hono + D1): API, page, /u/[id], OG image
+design/         page prototype sources and the ink/fire WebGL engine
 scripts/        sync-pricing.mjs, e2e.mjs
 ```

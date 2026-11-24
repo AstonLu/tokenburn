@@ -1,0 +1,23 @@
+{
+  "name": "@tokenburn/site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "sh build-page.sh",
+    "dev": "sh build-page.sh && wrangler d1 migrations apply tokenburn --local && wrangler dev",
+    "test": "node --test test/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "migrate:local": "wrangler d1 migrations apply tokenburn --local",
+    "deploy": "sh build-page.sh && wrangler d1 migrations apply tokenburn --remote && wrangler deploy"
+  },
+  "dependencies": {
+    "@tokenburn/core": "workspace:*",
+    "hono": "4.10.4",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "4.20251121.0",
+    "typescript": "5.9.3",
+    "wrangler": "4.49.1"
+  }
+}

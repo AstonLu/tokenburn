@@ -12,3 +12,7 @@ next-env.d.ts
 *.tsbuildinfo
 .tokenburn/
 packages/cli/vendor/
+
+# Cloudflare
+.wrangler/
+apps/site/public/index.html
