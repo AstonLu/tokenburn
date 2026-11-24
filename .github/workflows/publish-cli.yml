@@ -1,13 +1,14 @@
 name: Publish CLI to npm
 # Runs when the release-cli branch is pushed (point it at the commit to release), or by hand from the Actions tab.
-# Needs the repository secret NPM_TOKEN (an npm granular token with read and write on packages).
-# No provenance: npm only supports it for public repositories.
+# Uses npm trusted publishing (OIDC): no npm token. The package's npm settings trust
+# AstonLu/tokenburn with workflow publish-cli.yml. Bump packages/cli/package.json "version" before releasing.
 on:
   push:
     branches: [release-cli]
   workflow_dispatch:
 permissions:
   contents: read
+  id-token: write
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -18,18 +19,20 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          registry-url: https://registry.npmjs.org
+      - name: Use an npm that supports trusted publishing
+        run: npm install -g npm@11.21.2 && npm --version
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r test
-      - name: Check NPM_TOKEN is set
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          if [ -z "$NODE_AUTH_TOKEN" ]; then echo "::error::Repository secret NPM_TOKEN is missing or empty (Settings > Secrets and variables > Actions > Repository secrets)"; exit 1; fi
-          echo "NPM_TOKEN is set (${#NODE_AUTH_TOKEN} characters)"
-          npm whoami --registry https://registry.npmjs.org/ || { echo "::error::npm rejected NPM_TOKEN: check it has read and write access to packages"; exit 1; }
-      - name: Publish
+      - name: Skip if this version is already on npm
+        id: check
         working-directory: packages/cli
-        run: pnpm publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          NAME=$(node -p "require('./package.json').name"); VERSION=$(node -p "require('./package.json').version")
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then echo "$NAME@$VERSION is already published"; echo "skip=true" >> "$GITHUB_OUTPUT"; fi
+      - name: Pack (pnpm rewrites workspace dependencies)
+        if: steps.check.outputs.skip != 'true'
+        working-directory: packages/cli
+        run: pnpm pack --pack-destination "$RUNNER_TEMP" && ls "$RUNNER_TEMP"/*.tgz
+      - name: Publish with OIDC
+        if: steps.check.outputs.skip != 'true'
+        run: npm publish "$RUNNER_TEMP"/*.tgz --access public --registry https://registry.npmjs.org/
