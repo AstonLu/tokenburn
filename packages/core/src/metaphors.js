@@ -73,7 +73,7 @@ export function computeMetaphors(s, over = {}) {
       formula: '輸出 tokens × 0.75 字 ÷ 每分鐘 40 字', note: '不吃不睡連續打字', raw: { hours: typingHours, words: outWords } },
     { id: 'code-lines', title: 'AI 幫你寫的程式', value: round(lines / 1e4), unit: '萬行', estimate: false,
       formula: '輸出 tokens ÷ 每行 10 tokens', note: lines / A.linuxKernelLines >= 0.01 ? `約 ${round(lines / A.linuxKernelLines)} 個 Linux 核心（約 4,000 萬行）` : `約 ${round(lines / 15000)} 本 300 頁的書`, raw: { lines, linux: lines / A.linuxKernelLines } },
-    { id: 'laps', title: earthLaps >= 1 ? '把 tokens 排成一行字，可以繞地球' : taiwanLaps >= 1 ? '把 tokens 排成一行字，可以環島' : '把 tokens 排成一行字，長度有', value: earthLaps >= 1 ? round(earthLaps) : taiwanLaps >= 1 ? round(taiwanLaps) : round(km), unit: earthLaps >= 1 || taiwanLaps >= 1 ? '圈' : '公里', estimate: false,
+    { id: 'laps', title: taiwanLaps >= 1 ? 'tokens 排成一行字，環島台灣' : 'tokens 排成一行字，長度', value: taiwanLaps >= 1 ? round(taiwanLaps) : round(km), unit: taiwanLaps >= 1 ? '圈' : '公里', estimate: false,
       formula: 'tokens × 4 字元 × 每字 2 公釐', note: `總長 ${Math.round(km).toLocaleString('en-US')} 公里，等於環島 ${round(taiwanLaps)} 圈`, raw: { km, earthLaps, taiwanLaps } },
     { id: 'rereads', title: 'AI 把你的整個專案重讀了', value: round(t.cr / A.contextTokens), unit: '次', estimate: false,
       formula: '快取讀取 tokens ÷ 一次約 10 萬 tokens 的上下文', note: '每次對話都從頭讀一遍你的程式碼', raw: {} },
