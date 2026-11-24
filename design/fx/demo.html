@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PyroFX demo</title>
+<style>
+  html, body { height: 100%; margin: 0; background: #faf8f4; overflow: hidden; }
+  body { font: 600 13px/1 -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; color: #141210; }
+  canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  nav { position: fixed; top: 16px; right: 16px; display: flex; gap: 4px; z-index: 2; }
+  nav a { padding: 8px 14px; border-radius: 9px; text-decoration: none; color: #6f6a63; background: rgba(20,18,16,.06); }
+  nav a[aria-current="true"] { color: #141210; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+  #clock { position: fixed; left: 16px; bottom: 16px; z-index: 2; font-variant-numeric: tabular-nums; color: #6f6a63; }
+</style>
+<canvas id="c-ink"></canvas>
+<canvas id="c-fire" hidden></canvas>
+<nav><a href="#ink" data-fx="ink">Ink</a><a href="#fire" data-fx="fire">Fire</a></nav>
+<div id="clock"></div>
+<script src="pyrofx.js"></script>
+<script>
+(function () {
+  // Simulated year: 365 days of token burn, a slow ramp, quiet weekends and three spike days.
+  let seed = 7; const rnd = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+  const days = [];
+  for (let i = 0; i < 365; i++) {
+    const we = i % 7 > 4; let v = 0;
+    if (!(rnd() < (we ? .35 : .08))) v = (.35 + 1.25 * Math.pow(i / 365, 1.5)) * (10 + 52 * Math.pow(rnd(), 1.6)) * (we ? .6 : 1);
+    if (i === 269 || i === 324 || i === 353) v = 190;
+    days.push(v);
+  }
+  const MAX = Math.max(...days), SPIKES = { 269: 1, 324: 1, 353: 1 };
+  const MIX = [['ember', .52], ['amber', .22], ['graphite', .12], ['sand', .08], ['cobalt', .06]];
+  const pick = () => { let r = rnd(), a = 0; for (const [c, w] of MIX) { a += w; if (r <= a) return c; } return 'ember'; };
+  const YEAR_MS = 16000, manual = /[?&]manual/.test(location.search);
+  const clock = document.getElementById('clock');
+  let kind = null, fx = null, t0 = 0, day = -1, vnow = 0;
+
+  function start(k) {
+    if (fx) fx.destroy();
+    kind = k; day = -1;
+    for (const id of ['ink', 'fire']) document.getElementById('c-' + id).hidden = id !== k;
+    document.querySelectorAll('nav a').forEach(a => a.setAttribute('aria-current', a.dataset.fx === k));
+    if (!PyroFX.supported()) { clock.textContent = 'WebGL2 not available'; fx = null; return; }
+    fx = PyroFX[k](document.getElementById('c-' + k), { quality: (/[?&]q=(\w+)/.exec(location.search) || [])[1] || 'auto' });
+    t0 = manual ? vnow : performance.now();
+  }
+  function tick(now) {
+    if (!fx) return;
+    const f = Math.min(1, (now - t0) / YEAR_MS), d = Math.min(364, Math.floor(f * 365));
+    while (day < d && !window.__hold) {                       // once per simulated day
+      day++; const s = days[day] / MAX;
+      if (kind === 'ink') { if (s > 0) fx.pour(.5 + Math.sin(day / 29) * .3 + (rnd() - .5) * .12, s, pick()); }
+      else { fx.setHeat(.08 + .92 * Math.sqrt(s)); if (SPIKES[day]) fx.burst(1); }
+    }
+    if (f >= 1 && !window.__hold) { if (kind === 'ink') fx.calm(true); else fx.setHeat(.3); }
+    clock.textContent = kind + ' · day ' + (d + 1) + ' / 365';
+    fx.frame(now);
+  }
+  const cInk = document.getElementById('c-ink'); let last = null;
+  cInk.addEventListener('pointermove', e => { const x = e.clientX / innerWidth, y = e.clientY / innerHeight; if (last && kind === 'ink' && fx) fx.stir(x, y, x - last[0], y - last[1]); last = [x, y]; });
+  cInk.addEventListener('pointerleave', () => last = null);
+  addEventListener('resize', () => fx && fx.resize());
+  addEventListener('hashchange', () => start(location.hash === '#fire' ? 'fire' : 'ink'));
+  start(location.hash === '#fire' ? 'fire' : 'ink');
+  // ?manual: frames are advanced by the test harness with a virtual clock
+  window.__adv = (n, stepMs) => { for (let i = 0; i < n; i++) { vnow += stepMs || 1000 / 60; tick(vnow); } return vnow; };
+  window.__fx = () => fx;
+  if (!manual) (function loop(now) { tick(now); requestAnimationFrame(loop); })(performance.now());
+})();
+</script>
+</html>

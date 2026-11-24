@@ -1,0 +1,1210 @@
+<title>Tokenburn</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root { --paper:#faf8f4; --ink:#1d1b18; --quiet:#7d766a; --line:#d8d1c3; --ember:#ea4a0c;
+  --disp:'Big Shoulders Display','Arial Narrow','Helvetica Neue Condensed',Impact,sans-serif;
+  --zh:'Noto Sans TC','PingFang TC','Microsoft JhengHei','WenQuanYi Zen Hei',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  --gl:max(16px, env(safe-area-inset-left)); --gr:max(16px, env(safe-area-inset-right)); }
+* { box-sizing:border-box; }
+html { background:var(--paper); }
+body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--zh); -webkit-font-smoothing:antialiased; overflow-x:clip; }
+button { font:inherit; color:inherit; }
+:focus-visible { outline:2px solid var(--ember); outline-offset:3px; }
+.bar { position:fixed; z-index:20; top:0; left:0; right:0; height:52px; padding:0 var(--gr) 0 var(--gl); display:flex; align-items:center; gap:12px; background:var(--paper); border-bottom:1.5px solid var(--ink); }
+.brand { font-family:var(--disp); font-weight:900; font-size:22px; letter-spacing:.04em; text-transform:uppercase; display:flex; align-items:center; gap:8px; }
+.brand i { width:12px; height:12px; background:var(--ember); border:1.5px solid var(--ink); border-radius:50%; }
+.src { font-size:12px; color:var(--quiet); font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
+.src b { color:var(--ink); font-weight:700; margin-right:6px; }
+.bar .sp { flex:1; }
+.idx { font-family:var(--mono); font-size:12px; color:var(--quiet); font-variant-numeric:tabular-nums; }
+.btn { border:1.5px solid var(--ink); background:var(--paper); border-radius:999px; height:34px; padding:0 14px; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; }
+.btn:hover { background:var(--ink); color:var(--paper); }
+.btn.em, .acts a.btn.em { background:var(--ember); color:#fff; }
+.btn:hover, .acts a.btn:hover { background:var(--ink); color:var(--paper); }
+#ink, #veil { position:fixed; inset:0; width:100%; height:100%; display:block; z-index:0; pointer-events:none; }
+#ink { top:52px; height:calc(100% - 52px); }
+#veil { background:var(--paper); opacity:1; }
+main { position:relative; z-index:1; }
+.intro { height:100vh; height:100svh; padding:52px var(--gr) 0 var(--gl); background:var(--paper); display:grid; }
+.dash { width:100%; max-width:1280px; justify-self:center; min-height:0; padding:clamp(16px,3vh,30px) 0 clamp(14px,2.4vh,24px); display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); grid-template-rows:auto minmax(0,1fr); column-gap:clamp(28px,4vw,64px); row-gap:clamp(14px,2.6vh,26px); font-variant-numeric:tabular-nums; }
+.lb { display:block; font-size:12.5px; font-weight:700; color:var(--quiet); letter-spacing:.04em; }
+.facts { display:grid; grid-template-columns:auto auto; justify-content:start; column-gap:clamp(28px,4vw,60px); row-gap:clamp(8px,1.6vh,16px); align-content:start; }
+.fact b { display:block; font-family:var(--disp); font-weight:900; font-size:clamp(64px,13.5vh,124px); line-height:.9; margin-top:10px; white-space:nowrap; }
+.fact b em { font-family:var(--zh); font-style:normal; font-size:.3em; margin-left:.12em; }
+.fact.burn { position:relative; isolation:isolate; }
+.fact.burn .flame { position:absolute; left:-12%; right:-16%; top:-34%; bottom:-26%; z-index:-1; pointer-events:none; display:block; -webkit-mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent),linear-gradient(to top,transparent,#000 12%); -webkit-mask-composite:source-in; mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent),linear-gradient(to top,transparent,#000 12%); mask-composite:intersect; }
+.fact.burn .lb, .fact.burn b { position:relative; }
+@media (max-width: 700px) { .fact.burn .flame { top:-20%; bottom:-6%; } }
+.fact.span { grid-column:1 / -1; margin-top:clamp(6px,1.4vh,14px); }
+.fact .v { display:block; font-size:clamp(15px,2vh,18px); font-weight:600; color:var(--quiet); white-space:nowrap; font-variant-numeric:tabular-nums; }
+.em { color:var(--ember); }
+.models { min-width:0; align-self:start; }
+.mbar { display:flex; gap:2px; height:14px; margin:clamp(14px,3vh,30px) 0 10px; }
+.mbar i { min-width:3px; border:1.5px solid var(--ink); }
+.models table { width:100%; border-collapse:collapse; font-size:14px; }
+.models tr:first-child td { border-top:0; }
+.models th { font-size:11.5px; font-weight:500; color:var(--quiet); text-align:right; padding:3px 0 3px 12px; }
+.models td { padding:clamp(3px,.75vh,6px) 0 clamp(3px,.75vh,6px) 12px; text-align:right; border-top:1px solid var(--line); white-space:nowrap; }
+.models td:first-child { text-align:left; padding-left:0; font-weight:500; overflow:hidden; text-overflow:ellipsis; max-width:0; width:60%; }
+.dot { display:inline-block; width:10px; height:10px; border:1.5px solid var(--ink); margin-right:8px; vertical-align:-1px; }
+.tiles { grid-column:1 / -1; min-height:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border-top:1.5px solid var(--ink); }
+.tile { min-height:0; min-width:0; display:grid; grid-template-rows:minmax(0,1fr) auto auto auto; padding:clamp(8px,1.6vh,16px) clamp(12px,1.6vw,22px) 0; color:var(--ink); text-decoration:none; border-left:1px solid var(--line); }
+.tile:first-child { border-left:0; padding-left:0; }
+.tile:last-child { padding-right:0; }
+.tile svg { width:100%; height:100%; min-height:0; display:block; }
+.tile .tt { font-size:15px; font-weight:900; margin-top:6px; }
+.tile .est { font-style:normal; font-size:10.5px; font-weight:700; color:var(--quiet); border:1px solid var(--quiet); border-radius:3px; padding:0 4px; margin-left:8px; vertical-align:1px; }
+.tile b { font-family:var(--disp); font-weight:900; font-size:clamp(44px,8.6vh,76px); line-height:1; white-space:nowrap; }
+.tile b em { font-family:var(--zh); font-style:normal; font-size:.32em; margin-left:.14em; }
+.tile .ex { font-size:12.5px; line-height:1.5; color:var(--quiet); margin-top:4px; min-height:3em; }
+.tile:hover .tt { text-decoration:underline; text-underline-offset:3px; }
+.sc { position:relative; height:250vh; }
+.stage { position:sticky; top:0; height:100vh; height:100svh; padding:68px var(--gr) 14px var(--gl); display:grid; grid-template-rows:auto minmax(0,1fr); overflow:hidden; }
+.stage h2 { margin:0; font-size:clamp(19px,2.3vw,30px); font-weight:900; line-height:1.3; letter-spacing:.01em; max-width:1200px; width:100%; justify-self:center; }
+.stage h2 small { font-family:var(--mono); font-size:.5em; font-weight:500; color:var(--quiet); margin-right:.9em; vertical-align:.25em; font-variant-numeric:tabular-nums; }
+.stage svg { width:100%; height:100%; display:block; min-height:0; overflow:visible; }
+.algo { width:min(100%,560px); font-size:12.5px; color:var(--quiet); line-height:1.6; }
+.algo summary { cursor:pointer; font-weight:700; color:var(--ink); width:max-content; padding:6px 0; }
+.algo dl { margin:8px 0 0; }
+.algo dt { color:var(--ink); font-weight:700; margin-top:12px; font-variant-numeric:tabular-nums; }
+.algo dd { margin:2px 0 0; }
+svg * { vector-effect:non-scaling-stroke; }
+svg { stroke-width:1.6px; stroke-linejoin:round; stroke-linecap:round; }
+.num { font-family:var(--disp); font-weight:900; font-variant-numeric:tabular-nums; }
+.zh { font-family:var(--zh); font-weight:900; }
+.mono { font-family:var(--mono); font-weight:700; }
+svg text { stroke:none; }
+.end { padding:90px var(--gr) 80px var(--gl); display:grid; justify-items:center; gap:22px; }
+.card { width:min(100%,560px); border:1.5px solid var(--ink); background:#fffdf9; border-radius:6px; box-shadow:8px 8px 0 var(--line); padding:26px 26px 20px; position:relative; }
+.card::before { content:''; position:absolute; top:16px; right:18px; width:14px; height:14px; border-radius:50%; border:1.5px solid var(--ink); background:var(--paper); }
+.card h3 { margin:0 0 4px; font-family:var(--disp); font-weight:900; font-size:26px; letter-spacing:.04em; text-transform:uppercase; }
+.card .per { font-size:12px; color:var(--quiet); font-variant-numeric:tabular-nums; }
+.card ul { list-style:none; margin:16px 0 0; padding:0; }
+.card li { display:grid; grid-template-columns:44px 1fr auto; align-items:center; gap:12px; padding:13px 0; border-top:1.5px dashed var(--line); }
+.card li svg { width:44px; height:44px; }
+.card li span { font-size:13.5px; font-weight:500; line-height:1.4; }
+.card li b { font-family:var(--disp); font-weight:900; font-size:42px; line-height:1; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.card li b em { font-family:var(--zh); font-style:normal; font-size:15px; margin-left:4px; }
+.card li:last-child b { color:var(--ember); }
+.acts { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+.acts a { text-decoration:none; color:var(--ink); display:inline-flex; align-items:center; }
+.toast { position:fixed; z-index:40; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:var(--paper); padding:9px 16px; border-radius:999px; font-size:13px; font-variant-numeric:tabular-nums; }
+.drop { position:fixed; inset:0; z-index:30; display:grid; place-items:center; background:rgba(250,248,244,.92); }
+.drop div { border:2px dashed var(--ember); border-radius:10px; padding:44px 52px; font-size:22px; font-weight:900; background:var(--paper); }
+[hidden] { display:none !important; }
+@media (max-width:720px) {
+  .intro { height:auto; min-height:100svh; }
+  .dash { grid-template-columns:minmax(0,1fr); grid-template-rows:none; padding:18px 0 28px; row-gap:22px; }
+  .facts { grid-template-columns:auto auto; column-gap:22px; }
+  .fact .v { font-size:15px; }
+  .fact.big { grid-column:1 / -1; }
+  .fact b { font-size:84px; }
+  .tiles { grid-template-columns:minmax(0,1fr); }
+  .tile { grid-template-columns:132px minmax(0,1fr); grid-template-rows:auto auto auto; column-gap:14px; padding:14px 0; border-left:0; border-top:1px solid var(--line); }
+  .tile:first-child { border-top:0; }
+  .tile svg { grid-row:1 / 4; height:auto; aspect-ratio:3/2; align-self:center; }
+  .tile .tt { margin-top:0; }
+  .tile b { font-size:52px; }
+  .tile .ex { min-height:0; }
+  .sc { height:230vh; }
+  .stage { padding-top:62px; }
+  .idx { display:none; }
+  .src b { display:block; margin:0; }
+  .src { font-size:10.5px; line-height:1.25; white-space:normal; }
+  .brand { font-size:19px; }
+  .card li b { font-size:34px; }
+  .card { padding:22px 18px 14px; }
+}
+@media (prefers-reduced-motion:reduce) { .sc { height:100vh; height:100svh; } }
+</style>
+<header class="bar">
+  <div class="brand"><i></i>Tokenburn</div>
+  <div class="src" id="src"></div>
+  <span class="sp"></span>
+  <span class="idx" id="idx"></span>
+  <button class="btn" id="pick" type="button">讀取我的紀錄</button>
+  <input type="file" id="dir" webkitdirectory multiple hidden>
+</header>
+<canvas id="ink" aria-hidden="true"></canvas><div id="veil" aria-hidden="true"></div>
+<main id="main"></main>
+<div class="toast" id="toast" hidden role="status"></div>
+<div class="drop" id="drop" hidden><div>放開以讀取</div></div>
+<script>
+"use strict";window.PyroCore=(()=>{var B=Object.defineProperty;var We=Object.getOwnPropertyDescriptor;var fe=Object.getOwnPropertyNames;var ge=Object.prototype.hasOwnProperty;var ke=(e,t)=>{for(var c in t)B(e,c,{get:t[c],enumerable:!0})},Re=(e,t,c,u)=>{if(t&&typeof t=="object"||typeof t=="function")for(let a of fe(t))!ge.call(e,a)&&a!==c&&B(e,a,{get:()=>t[a],enumerable:!(u=We(t,a))||u.enumerable});return e};var ye=e=>Re(B({},"__esModule",{value:!0}),e);var Ee={};ke(Ee,{ASSUMPTIONS:()=>ee,CODEX_UNKNOWN_MODEL:()=>X,GEMINI_UNKNOWN_MODEL:()=>J,MODEL_RE:()=>q,PRICING:()=>I,PRICING_FALLBACKS:()=>Z,PRICING_META:()=>re,RATIO_MIN_TOKENS:()=>le,ROW_FIELDS:()=>Y,TITLE_RULES:()=>V,TOOLS:()=>ue,USAGE_FIELDS:()=>E,computeMetaphors:()=>de,computeSummary:()=>se,computeTitles:()=>G,createAggregator:()=>ae,humanDuration:()=>O,mergeRowMax:()=>ie,normModel:()=>_,parseClaudeLine:()=>L,parseCodexFile:()=>$,parseGeminiFile:()=>K,priceOf:()=>H,resolvePrice:()=>Q,toInt:()=>d,totalTokens:()=>U,utcDay:()=>x});var ce=Number.MAX_SAFE_INTEGER;function d(e){if(typeof e!="number"||!Number.isFinite(e)||e<=0)return 0;let t=Math.floor(e);return t>ce?ce:t}function x(e){if(typeof e!="string"&&typeof e!="number")return null;let t=typeof e=="number"?e:Date.parse(e);if(!Number.isFinite(t))return null;let u=new Date(t).toISOString().slice(0,10);return/^\d{4}-\d{2}-\d{2}$/.test(u)?u:null}var q=/^[a-z0-9.\-:_/]{1,64}$/;function _(e){if(typeof e!="string")return null;let t=e.trim().toLowerCase().replace(/\[[^\]]*\]/g,"");return t=t.replace(/[^a-z0-9.\-:_/]+/g,"-").replace(/-+/g,"-").replace(/^-|-$/g,""),t.length>64&&(t=t.slice(0,64)),q.test(t)?t:null}function k(e){return typeof e=="object"&&e!==null&&!Array.isArray(e)}function L(e){if(typeof e!="string"||!e.includes('"usage"')||!e.includes('"assistant"'))return null;let t;try{t=JSON.parse(e)}catch{return null}if(!k(t)||t.type!=="assistant")return null;let c=t.message;if(!k(c)||!k(c.usage)||c.model==="<synthetic>")return null;let u=_(c.model);if(!u)return null;let a=x(t.timestamp);if(!a)return null;let n=c.usage,o=k(n.cache_creation)?n.cache_creation:null,h=o?d(o.ephemeral_1h_input_tokens):0,p=o?d(o.ephemeral_5m_input_tokens):0,r=d(n.cache_creation_input_tokens);r===0&&h+p>0&&(r=h+p);let W=Math.min(h,r),g=d(n.output_tokens),s=k(n.output_tokens_details)?n.output_tokens_details:null,m=Math.min(s?d(s.thinking_tokens):0,g),y=typeof c.id=="string"&&c.id?c.id:null,R=typeof t.requestId=="string"&&t.requestId?t.requestId:null,w=y||R?`${y??""}:${R??""}`:null;return{d:a,model:u,key:w,in:d(n.input_tokens),out:g,cr:d(n.cache_read_input_tokens),cw:r,cw1h:W,think:m}}var X="codex-unknown";function ne(e){return k(e)?{input:d(e.input_tokens),cached:d(e.cached_input_tokens),output:d(e.output_tokens),reasoning:d(e.reasoning_output_tokens)}:null}function _e(e,t){return e.input===t.input&&e.cached===t.cached&&e.output===t.output&&e.reasoning===t.reasoning}function we(e,t){return!t||e.input<t.input||e.output<t.output?e:{input:e.input-t.input,cached:Math.max(0,e.cached-t.cached),output:e.output-t.output,reasoning:Math.max(0,e.reasoning-t.reasoning)}}function $(e){let t=[];if(typeof e!="string")return t;let c=null,u=null;for(let a of e.split(`
+`)){if(!a||a.charCodeAt(0)!==123)continue;let n;try{n=JSON.parse(a)}catch{continue}if(!k(n)||!k(n.payload))continue;let o=n.payload;if(n.type==="turn_context"){let s=_(o.model);s&&(c=s);continue}if(n.type==="session_meta"){let s=_(o.model);s&&!c&&(c=s);continue}if(n.type!=="event_msg"||o.type!=="token_count"||!k(o.info))continue;let h=ne(o.info.total_token_usage),p=ne(o.info.last_token_usage);if(h&&u&&_e(h,u))continue;let r=p??(h?we(h,u):null);if(h&&(u=h),!r||r.input+r.output+r.cached===0)continue;let W=x(n.timestamp);if(!W)continue;let g=Math.min(r.cached,r.input);t.push({d:W,model:c??X,key:null,in:r.input-g,out:r.output,cr:g,cw:0,cw1h:0,think:Math.min(r.reasoning,r.output)})}return t}var J="gemini-unknown";function K(e){let t=[];if(typeof e!="string")return t;let c;try{c=JSON.parse(e)}catch{return t}let u,a="";if(Array.isArray(c))u=c;else if(k(c)&&Array.isArray(c.messages))u=c.messages,typeof c.sessionId=="string"&&(a=c.sessionId);else return t;for(let n of u){if(!k(n)||!k(n.tokens))continue;let o=n.tokens,h=x(n.timestamp);if(!h)continue;let p=d(o.input),r=Math.min(d(o.cached),p),W=d(o.thoughts),g=d(o.output)+W,s=d(o.tool);if(p+g+s===0)continue;let m=typeof n.id=="string"||typeof n.id=="number"?String(n.id):"";t.push({d:h,model:_(n.model)??J,key:m?`${a}:${m}`:null,in:p-r+s,out:g,cr:r,cw:0,cw1h:0,think:W})}return t}var E=["in","out","cr","cw","cw1h","think"],Y=[...E,"n"],ue=["claude","codex","gemini"];function ae(){let e=new Set,t=new Map,c={records:0,duplicates:0,files:0};function u(a,n){if(!n)return!1;if(n.key){let p=`${a}|${n.key}`;if(e.has(p))return c.duplicates++,!1;e.add(p)}let o=`${n.d}|${a}|${n.model}`,h=t.get(o);h||(h={d:n.d,tool:a,model:n.model,in:0,out:0,cr:0,cw:0,cw1h:0,think:0,n:0},t.set(o,h));for(let p of E)h[p]+=n[p];return h.n+=1,c.records++,!0}return{add:u,addClaudeLine(a){return u("claude",L(a))},addClaudeFile(a){if(c.files++,typeof a=="string")for(let n of a.split(`
+`))u("claude",L(n))},addCodexFile(a){c.files++;for(let n of $(a))u("codex",n)},addGeminiFile(a){c.files++;for(let n of K(a))u("gemini",n)},rows(){return[...t.values()].sort((a,n)=>a.d<n.d?-1:a.d>n.d?1:a.tool<n.tool?-1:a.tool>n.tool?1:a.model<n.model?-1:a.model>n.model?1:0)},stats(){return{...c,rows:t.size}}}}function ie(e,t){if(!e)return{...t};let c={...e};for(let u of Y)c[u]=Math.max(e[u]??0,t[u]??0);return c}function U(e){return e.in+e.out+e.cr+e.cw}var Me={source:"https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json",syncedAt:"2026-11-23",unit:"USD per 1M tokens",fallbacks:{opus:"claude-opus-4-5",sonnet:"claude-sonnet-4-5",haiku:"claude-haiku-4-5",gpt:"gpt-5",gemini:"gemini-2.5-pro"},models:{"claude-fable-5":{input:10,output:50,cacheRead:1,cacheWrite5m:12.5,cacheWrite1h:20},"claude-fable-5-1":{input:10,output:50,cacheRead:.25,cacheWrite5m:12.5,cacheWrite1h:20},"claude-fable-5-2":{input:8,output:40,cacheRead:.2,cacheWrite5m:10,cacheWrite1h:16},"claude-haiku-4-5":{input:1,output:5,cacheRead:.1,cacheWrite5m:1.25,cacheWrite1h:2},"claude-haiku-4-5-20251001":{input:1,output:5,cacheRead:.1,cacheWrite5m:1.25,cacheWrite1h:2},"claude-haiku-5-5":{input:.1,output:.5,cacheRead:.01,cacheWrite5m:.125,cacheWrite1h:.2},"claude-mythos-5":{input:10,output:50,cacheRead:1,cacheWrite5m:12.5,cacheWrite1h:20},"claude-mythos-5-1":{input:10,output:50,cacheRead:.25,cacheWrite5m:12.5,cacheWrite1h:20},"claude-mythos-5-2":{input:8,output:40,cacheRead:.2,cacheWrite5m:10,cacheWrite1h:16},"claude-mythos-preview":{input:10,output:50,cacheRead:1,cacheWrite5m:12.5,cacheWrite1h:20},"claude-opus-4-5":{input:5,output:25,cacheRead:.5,cacheWrite5m:6.25,cacheWrite1h:10},"claude-opus-4-5-20251101":{input:5,output:25,cacheRead:.5,cacheWrite5m:6.25,cacheWrite1h:10},"claude-opus-4-6":{input:5,output:25,cacheRead:.5,cacheWrite5m:6.25,cacheWrite1h:10},"claude-opus-4-6-20260205":{input:5,output:25,cacheRead:.5,cacheWrite5m:6.25,cacheWrite1h:10},"claude-opus-4-7":{input:5,output:25,cacheRead:.5,cacheWrite5m:6.25,cacheWrite1h:10},"claude-opus-4-7-20260416":{input:5,output:25,cacheRead:.5,cacheWrite5m:6.25,cacheWrite1h:10},"claude-opus-4-8":{input:5,output:25,cacheRead:.5,cacheWrite5m:6.25,cacheWrite1h:10},"claude-opus-5":{input:5,output:25,cacheRead:.5,cacheWrite5m:6.25,cacheWrite1h:10},"claude-opus-5-5":{input:4,output:20,cacheRead:.2,cacheWrite5m:5,cacheWrite1h:8},"claude-sonnet-4-5":{input:3,output:15,cacheRead:.3,cacheWrite5m:3.75,cacheWrite1h:6},"claude-sonnet-4-5-20250929":{input:3,output:15,cacheRead:.3,cacheWrite5m:3.75,cacheWrite1h:6},"claude-sonnet-4-6":{input:3,output:15,cacheRead:.3,cacheWrite5m:3.75,cacheWrite1h:6},"claude-sonnet-5":{input:2,output:10,cacheRead:.2,cacheWrite5m:2.5,cacheWrite1h:4},"claude-sonnet-5-5":{input:2,output:10,cacheRead:.1,cacheWrite5m:2.5,cacheWrite1h:4},"gemini-2.5-flash":{input:.3,output:2.5,cacheRead:.03,cacheWrite5m:null,cacheWrite1h:null},"gemini-2.5-flash-lite":{input:.1,output:.4,cacheRead:.01,cacheWrite5m:null,cacheWrite1h:null},"gemini-2.5-pro":{input:1.25,output:10,cacheRead:.125,cacheWrite5m:null,cacheWrite1h:null},"gemini-3-flash-preview":{input:.5,output:3,cacheRead:.05,cacheWrite5m:null,cacheWrite1h:null},"gemini-3.1-flash-lite":{input:.25,output:1.5,cacheRead:.025,cacheWrite5m:null,cacheWrite1h:null},"gemini-3.1-flash-lite-preview":{input:.25,output:1.5,cacheRead:.025,cacheWrite5m:null,cacheWrite1h:null},"gemini-3.1-pro-preview":{input:2,output:12,cacheRead:.2,cacheWrite5m:null,cacheWrite1h:null},"gemini-3.5-flash":{input:1.5,output:9,cacheRead:.15,cacheWrite5m:null,cacheWrite1h:null},"gemini-3.5-flash-lite":{input:.3,output:2.5,cacheRead:.03,cacheWrite5m:null,cacheWrite1h:null},"gemini-3.6-flash":{input:.75,output:3.75,cacheRead:.075,cacheWrite5m:null,cacheWrite1h:null},"gemini-3.7-flash":{input:.75,output:3.75,cacheRead:.075,cacheWrite5m:null,cacheWrite1h:null},"gemini-3.8-flash":{input:.75,output:3.75,cacheRead:.075,cacheWrite5m:null,cacheWrite1h:null},"gemini-4-argon":{input:2,output:10,cacheRead:.1,cacheWrite5m:null,cacheWrite1h:null},"gemini-4-carbon":{input:2,output:10,cacheRead:.1,cacheWrite5m:null,cacheWrite1h:null},"gemini-4-hydrogen":{input:1.5,output:7.5,cacheRead:.075,cacheWrite5m:null,cacheWrite1h:null},"gemini-4-neon":{input:3,output:15,cacheRead:.15,cacheWrite5m:null,cacheWrite1h:null},"gemini-exp-1114":{input:0,output:0,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"gemini-exp-1206":{input:0,output:0,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"gemini-flash-latest":{input:.75,output:3.75,cacheRead:.075,cacheWrite5m:null,cacheWrite1h:null},"gemini-flash-lite-latest":{input:.3,output:2.5,cacheRead:.03,cacheWrite5m:null,cacheWrite1h:null},"gemini-gemma-2-27b-it":{input:.35,output:1.05,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"gemini-gemma-2-9b-it":{input:.35,output:1.05,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"gemini-omni-1.1-flash":{input:1.5,output:9,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"gemini-omni-1.2-flash":{input:1.5,output:9,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"gemini-omni-flash-preview":{input:1.5,output:9,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"gemini-pro-latest":{input:2,output:12,cacheRead:.2,cacheWrite5m:null,cacheWrite1h:null},"gemini-robotics-er-2-preview":{input:1,output:5,cacheRead:.1,cacheWrite5m:null,cacheWrite1h:null},"gemini-robotics-er-2-streaming-preview":{input:1,output:5,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"gpt-4.1":{input:2,output:8,cacheRead:.5,cacheWrite5m:null,cacheWrite1h:null},"gpt-4.1-2025-04-14":{input:2,output:8,cacheRead:.5,cacheWrite5m:null,cacheWrite1h:null},"gpt-4.1-mini":{input:.4,output:1.6,cacheRead:.1,cacheWrite5m:null,cacheWrite1h:null},"gpt-4.1-mini-2025-04-14":{input:.4,output:1.6,cacheRead:.1,cacheWrite5m:null,cacheWrite1h:null},"gpt-4.1-nano":{input:.1,output:.4,cacheRead:.025,cacheWrite5m:null,cacheWrite1h:null},"gpt-4.1-nano-2025-04-14":{input:.1,output:.4,cacheRead:.025,cacheWrite5m:null,cacheWrite1h:null},"gpt-4o":{input:2.5,output:10,cacheRead:1.25,cacheWrite5m:null,cacheWrite1h:null},"gpt-4o-2024-05-13":{input:5,output:15,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"gpt-4o-2024-08-06":{input:2.5,output:10,cacheRead:1.25,cacheWrite5m:null,cacheWrite1h:null},"gpt-4o-2024-11-20":{input:2.5,output:10,cacheRead:1.25,cacheWrite5m:null,cacheWrite1h:null},"gpt-4o-mini":{input:.15,output:.6,cacheRead:.075,cacheWrite5m:null,cacheWrite1h:null},"gpt-4o-mini-2024-07-18":{input:.15,output:.6,cacheRead:.075,cacheWrite5m:null,cacheWrite1h:null},"gpt-5":{input:1.25,output:10,cacheRead:.125,cacheWrite5m:null,cacheWrite1h:null},"gpt-5-2025-08-07":{input:1.25,output:10,cacheRead:.125,cacheWrite5m:null,cacheWrite1h:null},"gpt-5-chat":{input:1.25,output:10,cacheRead:.125,cacheWrite5m:null,cacheWrite1h:null},"gpt-5-chat-latest":{input:1.25,output:10,cacheRead:.125,cacheWrite5m:null,cacheWrite1h:null},"gpt-5-codex":{input:1.25,output:10,cacheRead:.125,cacheWrite5m:null,cacheWrite1h:null},"gpt-5-mini":{input:.25,output:2,cacheRead:.025,cacheWrite5m:null,cacheWrite1h:null},"gpt-5-mini-2025-08-07":{input:.25,output:2,cacheRead:.025,cacheWrite5m:null,cacheWrite1h:null},"gpt-5-nano":{input:.05,output:.4,cacheRead:.005,cacheWrite5m:null,cacheWrite1h:null},"gpt-5-nano-2025-08-07":{input:.05,output:.4,cacheRead:.005,cacheWrite5m:null,cacheWrite1h:null},"gpt-5-pro":{input:15,output:120,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"gpt-5-pro-2025-10-06":{input:15,output:120,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.1":{input:1.25,output:10,cacheRead:.125,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.1-2025-11-13":{input:1.25,output:10,cacheRead:.125,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.1-chat-latest":{input:1.25,output:10,cacheRead:.125,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.1-codex":{input:1.25,output:10,cacheRead:.125,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.1-codex-max":{input:1.25,output:10,cacheRead:.125,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.1-codex-mini":{input:.25,output:2,cacheRead:.025,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.2":{input:1.75,output:14,cacheRead:.175,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.2-2025-12-11":{input:1.75,output:14,cacheRead:.175,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.2-chat-latest":{input:1.75,output:14,cacheRead:.175,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.2-codex":{input:1.75,output:14,cacheRead:.175,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.2-pro":{input:21,output:168,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.2-pro-2025-12-11":{input:21,output:168,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.3-chat-latest":{input:1.75,output:14,cacheRead:.175,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.3-codex":{input:1.75,output:14,cacheRead:.175,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.4":{input:2.5,output:15,cacheRead:.25,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.4-2026-03-05":{input:2.5,output:15,cacheRead:.25,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.4-mini":{input:.75,output:4.5,cacheRead:.075,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.4-mini-2026-03-17":{input:.75,output:4.5,cacheRead:.075,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.4-nano":{input:.2,output:1.25,cacheRead:.02,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.4-nano-2026-03-17":{input:.2,output:1.25,cacheRead:.02,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.4-pro":{input:30,output:180,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.4-pro-2026-03-05":{input:30,output:180,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.5":{input:5,output:30,cacheRead:.5,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.5-2026-04-23":{input:5,output:30,cacheRead:.5,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.5-cyber":{input:12.5,output:75,cacheRead:1.25,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.5-cyber-preview":{input:12.5,output:75,cacheRead:1.25,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.5-pro":{input:30,output:180,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.5-pro-2026-04-23":{input:30,output:180,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"gpt-5.6":{input:4,output:20,cacheRead:.4,cacheWrite5m:5,cacheWrite1h:null},"gpt-5.6-cyber":{input:12.5,output:75,cacheRead:1.25,cacheWrite5m:15.625,cacheWrite1h:null},"gpt-5.6-luna":{input:.2,output:1.2,cacheRead:.02,cacheWrite5m:.25,cacheWrite1h:null},"gpt-5.6-sol":{input:4,output:20,cacheRead:.4,cacheWrite5m:5,cacheWrite1h:null},"gpt-5.6-terra":{input:2,output:12,cacheRead:.2,cacheWrite5m:2.5,cacheWrite1h:null},o1:{input:15,output:60,cacheRead:7.5,cacheWrite5m:null,cacheWrite1h:null},"o1-2024-12-17":{input:15,output:60,cacheRead:7.5,cacheWrite5m:null,cacheWrite1h:null},"o1-pro":{input:150,output:600,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"o1-pro-2025-03-19":{input:150,output:600,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},o3:{input:2,output:8,cacheRead:.5,cacheWrite5m:null,cacheWrite1h:null},"o3-2025-04-16":{input:2,output:8,cacheRead:.5,cacheWrite5m:null,cacheWrite1h:null},"o3-mini":{input:1.1,output:4.4,cacheRead:.55,cacheWrite5m:null,cacheWrite1h:null},"o3-mini-2025-01-31":{input:1.1,output:4.4,cacheRead:.55,cacheWrite5m:null,cacheWrite1h:null},"o3-pro":{input:20,output:80,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"o3-pro-2025-06-10":{input:20,output:80,cacheRead:null,cacheWrite5m:null,cacheWrite1h:null},"o4-mini":{input:1.1,output:4.4,cacheRead:.275,cacheWrite5m:null,cacheWrite1h:null},"o4-mini-2025-04-16":{input:1.1,output:4.4,cacheRead:.275,cacheWrite5m:null,cacheWrite1h:null}}},D=Me;var I=D.models,Z=D.fallbacks,re={source:D.source,syncedAt:D.syncedAt};function xe(e){let t=e.toLowerCase(),c=t.lastIndexOf("/");return c>=0&&(t=t.slice(c+1)),t}function Ie(e){return e.includes("opus")?"opus":e.includes("sonnet")?"sonnet":e.includes("haiku")?"haiku":e.includes("gemini")?"gemini":e.startsWith("gpt")||e.includes("codex")||/^o\d/.test(e)?"gpt":null}var oe=new Map;function Q(e){let t=oe.get(e);if(t)return t;let c=xe(String(e)),u=[c,c.replace(/[-@]\d{8}$/,""),c.replace(/-latest$/,""),c.replace(/[-@]\d{4}-\d{2}-\d{2}$/,"")],a=null;for(let n of u)if(Object.prototype.hasOwnProperty.call(I,n)){a={key:n,price:I[n],estimated:!1};break}if(!a){let n="";for(let o of Object.keys(I))o.length>n.length&&c.startsWith(o+"-")&&(n=o);n&&(a={key:n,price:I[n],estimated:!0})}if(!a){let n=Ie(c),o=n?Z[n]:void 0;a=o&&I[o]?{key:o,price:I[o],estimated:!0}:{key:null,price:null,estimated:!0}}return oe.set(e,a),a}function H(e,t){let{key:c,price:u,estimated:a}=Q(e);if(!u)return{usdMicros:0,estimated:!0,pricedAs:null};let n=t.in??0,o=t.out??0,h=t.cr??0,p=t.cw??0,r=Math.min(t.cw1h??0,p),W=u.cacheRead??u.input,g=u.cacheWrite5m??u.input,s=u.cacheWrite1h??g,m=n*u.input+o*u.output+h*W+(p-r)*g+r*s;return{usdMicros:Math.round(m),estimated:a,pricedAs:c}}var le=1e6,V=[{id:"burn-1m",category:"tokens",tier:1,name:"\u9EDE\u706B\u8005",nameEn:"Igniter",description:"\u7D2F\u8A08\u71C3\u71D2 100 \u842C tokens",test:e=>e.totalTokens>=1e6},{id:"burn-10m",category:"tokens",tier:2,name:"\u70C8\u7130\u884C\u8005",nameEn:"Flamewalker",description:"\u7D2F\u8A08\u71C3\u71D2 1,000 \u842C tokens",test:e=>e.totalTokens>=1e7},{id:"burn-100m",category:"tokens",tier:3,name:"\u7194\u7210\u4E4B\u4E3B",nameEn:"Furnace Lord",description:"\u7D2F\u8A08\u71C3\u71D2 1 \u5104 tokens",test:e=>e.totalTokens>=1e8},{id:"burn-1b",category:"tokens",tier:4,name:"\u6046\u661F\u5F15\u64CE",nameEn:"Stellar Engine",description:"\u7D2F\u8A08\u71C3\u71D2 10 \u5104 tokens",test:e=>e.totalTokens>=1e9},{id:"burn-10b",category:"tokens",tier:5,name:"\u9ED1\u6D1E\u541E\u566C\u8005",nameEn:"Black Hole",description:"\u7D2F\u8A08\u71C3\u71D2 100 \u5104 tokens",test:e=>e.totalTokens>=1e10},{id:"peak-10m",category:"peak",tier:1,name:"\u55AE\u65E5\u7206\u71C3",nameEn:"Flash Burn",description:"\u55AE\u65E5\u71C3\u71D2\u8D85\u904E 1,000 \u842C tokens",test:e=>e.peakDayTokens>=1e7},{id:"peak-100m",category:"peak",tier:2,name:"\u8D85\u65B0\u661F",nameEn:"Supernova",description:"\u55AE\u65E5\u71C3\u71D2\u8D85\u904E 1 \u5104 tokens",test:e=>e.peakDayTokens>=1e8},{id:"cache-80",category:"cache",tier:1,name:"\u5FEB\u53D6\u9054\u4EBA",nameEn:"Cache Adept",description:"\u5FEB\u53D6\u547D\u4E2D\u7387\u9054 80%",test:e=>e.totalTokens>=1e6&&e.cacheHitRate>=8e3},{id:"cache-95",category:"cache",tier:2,name:"\u5FEB\u53D6\u4E4B\u795E",nameEn:"Cache Deity",description:"\u5FEB\u53D6\u547D\u4E2D\u7387\u9054 95%",test:e=>e.totalTokens>=1e6&&e.cacheHitRate>=9500},{id:"opus-50",category:"opus",tier:1,name:"Opus \u4FE1\u5F92",nameEn:"Opus Devotee",description:"\u904E\u534A tokens \u7531 Opus \u71C3\u71D2",test:e=>e.totalTokens>=1e6&&e.opusShare>=5e3},{id:"opus-90",category:"opus",tier:2,name:"\u53EA\u7528\u6700\u597D\u7684",nameEn:"Only The Best",description:"\u4E5D\u6210\u4EE5\u4E0A tokens \u7531 Opus \u71C3\u71D2",test:e=>e.totalTokens>=1e6&&e.opusShare>=9e3},{id:"streak-7",category:"streak",tier:1,name:"\u4E03\u65E5\u4E0D\u7184",nameEn:"Seven Day Flame",description:"\u9023\u7E8C 7 \u5929\u90FD\u6709\u71C3\u71D2",test:e=>e.longestStreak>=7},{id:"streak-30",category:"streak",tier:2,name:"\u9577\u660E\u4E4B\u706B",nameEn:"Eternal Flame",description:"\u9023\u7E8C 30 \u5929\u90FD\u6709\u71C3\u71D2",test:e=>e.longestStreak>=30},{id:"streak-100",category:"streak",tier:3,name:"\u767E\u65E5\u8056\u706B",nameEn:"Hundred Day Torch",description:"\u9023\u7E8C 100 \u5929\u90FD\u6709\u71C3\u71D2",test:e=>e.longestStreak>=100},{id:"tri-tool",category:"tools",tier:1,name:"\u4E09\u5200\u6D41",nameEn:"Three Sword Style",description:"Claude\u3001Codex\u3001Gemini \u4E09\u7A2E CLI \u90FD\u6709\u4F7F\u7528",test:e=>e.toolCount>=3}];function G(e){return V.filter(t=>t.test(e)).map(({test:t,...c})=>c)}var he=864e5;function Te(e){return Math.floor(Date.parse(e+"T00:00:00Z")/he)}var j=e=>Math.round(e/1e4);function se(e,t={}){let c=t.now??Date.now(),u={in:0,out:0,cr:0,cw:0,cw1h:0,think:0,n:0,tokens:0},a=0,n=!1,o=new Map,h=new Map,p=new Map,r=0;for(let i of e){let l=U(i),S=H(i.model,i);for(let te of E)u[te]+=i[te];u.n+=i.n,u.tokens+=l,a+=S.usdMicros,S.estimated&&l>0&&(n=!0),i.model.includes("opus")&&(r+=l);let b=o.get(i.tool)??{tokens:0,micros:0,n:0};b.tokens+=l,b.micros+=S.usdMicros,b.n+=i.n,o.set(i.tool,b);let N=h.get(i.model)??{tools:new Set,tokens:0,micros:0,n:0,estimated:S.estimated,pricedAs:S.pricedAs};N.tools.add(i.tool),N.tokens+=l,N.micros+=S.usdMicros,N.n+=i.n,h.set(i.model,N);let z=p.get(i.d)??{tokens:0,micros:0};z.tokens+=l,z.micros+=S.usdMicros,p.set(i.d,z)}let W=[...o].map(([i,l])=>({tool:i,tokens:l.tokens,usd:j(l.micros),n:l.n})).sort((i,l)=>l.tokens-i.tokens),g=[...h].map(([i,l])=>({model:i,tools:[...l.tools].sort(),tokens:l.tokens,usd:j(l.micros),n:l.n,estimated:l.estimated,pricedAs:l.pricedAs})).sort((i,l)=>l.usd-i.usd||l.tokens-i.tokens),s=[...p].filter(([,i])=>i.tokens>0).map(([i,l])=>({d:i,tokens:l.tokens,usd:j(l.micros)})).sort((i,l)=>i.d<l.d?-1:i.d>l.d?1:0),m=null;for(let i of s)(!m||i.tokens>m.tokens)&&(m=i);let y=0,R=0,w=NaN;for(let i of s){let l=Te(i.d);R=l===w+1?R+1:1,R>y&&(y=R),w=l}let C=Math.floor(c/he),P=s.length&&C-w<=1?R:0,T=u.in+u.cr+u.cw,v=T?Math.round(u.cr*1e4/T):0,M=u.tokens?Math.round(r*1e4/u.tokens):0,F=j(a),me=G({totalTokens:u.tokens,usdTotal:F,peakDayTokens:m?m.tokens:0,cacheHitRate:v,opusShare:M,longestStreak:y,toolCount:W.filter(i=>i.tokens>0).length});return{totals:u,usdTotal:F,estimated:n,perTool:W,perModel:g,daily:s,peakDay:m,streak:{current:P,longest:y},cacheHitRate:v,activeDays:s.length,firstDay:s.length?s[0].d:null,lastDay:s.length?s[s.length-1].d:null,titles:me}}var ee={modelParams:4e11,h100Flops:989e12,utilization:.4,h100Watts:700,pue:1.2,iphoneWh:13,evKwhPer100km:15,wordsPerToken:.75,typingWpm:40,tokensPerCodeLine:10,linuxKernelLines:4e7,charsPerToken:4,mmPerChar:2,earthKm:40075,taiwanLoopKm:968,contextTokens:1e5,seniorUsdPerHour:100},Se=3600,pe=24,A=8760;function O(e){return e>=A?{value:e/A,unit:"\u5E74"}:e>=pe?{value:e/pe,unit:"\u5929"}:e>=1?{value:e,unit:"\u5C0F\u6642"}:{value:e*60,unit:"\u5206\u9418"}}function f(e){return e>=100?Math.round(e):e>=10?Math.round(e*10)/10:Math.round(e*100)/100}function de(e,t={}){let c={...ee,...t},u=e.totals,a=u.in+u.out+u.cr+u.cw,n=u.in+u.out+u.cw,o=c.h100Flops*c.utilization,h=F=>2*c.modelParams*F/o/Se,p=h(a),r=h(n),W=r*c.h100Watts/1e3*c.pue,g=u.out*c.wordsPerToken,s=g/c.typingWpm/60,m=u.out/c.tokensPerCodeLine,y=a*c.charsPerToken*c.mmPerChar/1e6,R=e.usdTotal/100,w=O(p),C=O(p-r),P=O(r),T=O(s),v=y/c.earthKm,M=y/c.taiwanLoopKm;return[{id:"gpu-days",title:"\u4E00\u5F35 H100 \u4E0D\u7720\u4E0D\u4F11\u8981\u8DD1",value:f(w.value),unit:w.unit,estimate:!0,formula:"2 \xD7 \u6A21\u578B\u53C3\u6578 \xD7 \u5168\u90E8 tokens \xF7 (H100 \u7B97\u529B \xD7 \u5229\u7528\u7387)",note:`\u5047\u8A2D\u6A21\u578B ${c.modelParams/1e8} \u5104\u53C3\u6578\uFF0CH100 \u6BCF\u79D2 ${c.h100Flops/1e12} \u5146\u6B21\u904B\u7B97\u3001\u5229\u7528\u7387 ${c.utilization*100}%`,raw:{hours:p}},{id:"cache-saved",title:"\u5FEB\u53D6\u5E6B\u4F60\u7701\u4E0B\u7684 H100 \u6642\u9593",value:f(C.value),unit:C.unit,estimate:!0,formula:"\u6C92\u6709\u5FEB\u53D6\u7684\u986F\u5361\u6642\u9593 \u2212 \u5BE6\u969B\u9700\u8981\u91CD\u7B97\u7684\u986F\u5361\u6642\u9593",note:"\u8B80\u53D6\u5FEB\u53D6\u7684 tokens \u4E0D\u9700\u91CD\u65B0\u904B\u7B97",raw:{hours:p-r,withCache:r}},{id:"gpu-share",title:r>=A?"\u4F60\u7B49\u65BC\u7368\u5360\u5E7E\u5F35 H100 \u6574\u6574\u4E00\u5E74":"\u4E00\u5F35 H100 \u6574\u5E74\u88E1\u5C08\u9580\u70BA\u4F60\u904B\u8F49",value:r>=A?f(r/A):f(P.value),unit:r>=A?"\u5F35":P.unit,estimate:!0,formula:"\u5BE6\u969B\u91CD\u7B97\u7684\u986F\u5361\u5C0F\u6642 \xF7 \u4E00\u5E74 8,760 \u5C0F\u6642",note:"\u6709\u5FEB\u53D6\u5F8C\u7684\u5BE6\u969B\u7528\u91CF",raw:{hours:r}},{id:"typing",title:"AI \u5BEB\u51FA\u4F86\u7684\u5B57\uFF0C\u4EBA\u8981\u6253",value:f(T.value),unit:T.unit,estimate:!1,formula:"\u8F38\u51FA tokens \xD7 0.75 \u5B57 \xF7 \u6BCF\u5206\u9418 40 \u5B57",note:"\u4E0D\u5403\u4E0D\u7761\u9023\u7E8C\u6253\u5B57",raw:{hours:s,words:g}},{id:"code-lines",title:"AI \u5E6B\u4F60\u5BEB\u7684\u7A0B\u5F0F",value:f(m/1e4),unit:"\u842C\u884C",estimate:!1,formula:"\u8F38\u51FA tokens \xF7 \u6BCF\u884C 10 tokens",note:m/c.linuxKernelLines>=.01?`\u7D04 ${f(m/c.linuxKernelLines)} \u500B Linux \u6838\u5FC3\uFF08\u7D04 4,000 \u842C\u884C\uFF09`:`\u7D04 ${f(m/15e3)} \u672C 300 \u9801\u7684\u66F8`,raw:{lines:m,linux:m/c.linuxKernelLines}},{id:"laps",title:M>=1?"tokens \u6392\u6210\u4E00\u884C\u5B57\uFF0C\u74B0\u5CF6\u53F0\u7063":"tokens \u6392\u6210\u4E00\u884C\u5B57\uFF0C\u9577\u5EA6",value:M>=1?f(M):f(y),unit:M>=1?"\u5708":"\u516C\u91CC",estimate:!1,formula:"tokens \xD7 4 \u5B57\u5143 \xD7 \u6BCF\u5B57 2 \u516C\u91D0",note:`\u7E3D\u9577 ${Math.round(y).toLocaleString("en-US")} \u516C\u91CC\uFF0C\u7B49\u65BC\u74B0\u5CF6 ${f(M)} \u5708`,raw:{km:y,earthLaps:v,taiwanLaps:M}},{id:"rereads",title:"AI \u628A\u4F60\u7684\u6574\u500B\u5C08\u6848\u91CD\u8B80\u4E86",value:f(u.cr/c.contextTokens),unit:"\u6B21",estimate:!1,formula:"\u5FEB\u53D6\u8B80\u53D6 tokens \xF7 \u4E00\u6B21\u7D04 10 \u842C tokens \u7684\u4E0A\u4E0B\u6587",note:"\u6BCF\u6B21\u5C0D\u8A71\u90FD\u5F9E\u982D\u8B80\u4E00\u904D\u4F60\u7684\u7A0B\u5F0F\u78BC",raw:{}},{id:"energy",title:"\u9019\u4E9B\u7B97\u529B\u7528\u6389\u7684\u96FB\uFF0C\u5920 iPhone \u5145\u98FD",value:f(W*1e3/c.iphoneWh),unit:"\u6B21",estimate:!0,formula:"\u986F\u5361\u5C0F\u6642 \xD7 700 \u74E6 \xD7 \u6A5F\u623F\u4FC2\u6578 1.2",note:`\u5171 ${f(W)} \u5EA6\u96FB\uFF0C\u5920\u96FB\u52D5\u8ECA\u958B ${Math.round(W/c.evKwhPer100km*100).toLocaleString("en-US")} \u516C\u91CC`,raw:{kwh:W,evKm:W/c.evKwhPer100km*100}},{id:"value",title:"\u4F46\u9019\u4E00\u5207\u7684\u7B49\u6548\u50F9\u503C\uFF0C\u53EA\u7B49\u65BC\u8CC7\u6DF1\u5DE5\u7A0B\u5E2B\u5DE5\u4F5C",value:R/c.seniorUsdPerHour>=1?f(R/c.seniorUsdPerHour):f(R/c.seniorUsdPerHour*60),unit:R/c.seniorUsdPerHour>=1?"\u5C0F\u6642":"\u5206\u9418",estimate:!1,formula:"\u7B49\u6548 API \u50F9\u503C \xF7 \u6642\u85AA 100 \u7F8E\u5143",note:`\u5C0D\u6BD4\uFF1AAI \u7684\u8F38\u51FA\u91CF\u4EBA\u8981\u6253 ${f(T.value)} ${T.unit}`,raw:{usd:R}}]}return ye(Ee);})();
+
+</script>
+<script>
+/* PyroFX: ink-in-water and volumetric fire on paper white. Raw WebGL2, no dependencies.
+   window.PyroFX = { supported(), ink(canvas, opts), fire(canvas, opts) } */
+(function () {
+  'use strict';
+
+  // ---------------------------------------------------------------- shared GL helpers
+  const CTX_ATTR = { alpha: false, antialias: false, depth: false, stencil: false, premultipliedAlpha: false, preserveDrawingBuffer: false, powerPreference: 'high-performance' };
+  const VS = '#version 300 es\nin vec2 aPos; out vec2 vUv; void main(){ vUv = aPos*.5+.5; gl_Position = vec4(aPos,0.,1.); }';
+  const HEAD = '#version 300 es\nprecision highp float; precision highp sampler2D; precision highp sampler3D;\nin vec2 vUv; out vec4 o;\n';
+  const COMMON = `
+  float h21(vec2 p){ vec3 q = fract(vec3(p.xyx)*.1031); q += dot(q, q.yzx+33.33); return fract((q.x+q.y)*q.z); }
+  float vn(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.-2.*f); return mix(mix(h21(i),h21(i+vec2(1,0)),f.x), mix(h21(i+vec2(0,1)),h21(i+vec2(1,1)),f.x), f.y); }
+  // paper: mean is exactly #faf8f4; fine tooth plus faint fibre mottling
+  vec3 paper(vec2 fc, float dpr){
+    vec2 p = fc/dpr;
+    float tooth = (h21(fc)-.5)*.014 + (vn(p*.9)-.5)*.012;
+    float fibre = (vn(p*vec2(.045,.5)+7.)-.5)*.007 + (vn(p*.02+3.)-.5)*.006;
+    return vec3(.980,.973,.957) + tooth + fibre;
+  }
+  // bicubic (B-spline) lookup from 4 bilinear taps: removes the diamond artefacts of magnified low-res fields
+  vec4 bic(sampler2D t, vec2 uv, vec2 sz, float lod){
+    vec2 p = uv*sz - .5, f = fract(p); p -= f;
+    vec2 f2 = f*f, f3 = f2*f;
+    vec2 w0 = (1.-f)*(1.-f)*(1.-f)/6., w1 = (3.*f3-6.*f2+4.)/6., w3 = f3/6., w2 = 1.-w0-w1-w3;
+    vec2 g0 = w0+w1, g1 = w2+w3;
+    vec2 a = (p - .5 + w1/g0)/sz, b = (p + 1.5 + w3/g1)/sz;
+    return g0.y*(g0.x*textureLod(t, a, lod) + g1.x*textureLod(t, vec2(b.x,a.y), lod))
+         + g1.y*(g0.x*textureLod(t, vec2(a.x,b.y), lod) + g1.x*textureLod(t, b, lod));
+  }`;
+
+  function makeGL(canvas) {
+    const gl = canvas.getContext('webgl2', CTX_ATTR);
+    if (!gl) return null;
+    if (!gl.getExtension('EXT_color_buffer_float') && !gl.getExtension('EXT_color_buffer_half_float')) return null;
+    const res = [];           // every GL object we create, for destroy()
+    const keep = (kind, obj) => (res.push([kind, obj]), obj);
+    const quad = keep('Buffer', gl.createBuffer());
+    gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+
+    function shader(type, src) {
+      const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { const log = gl.getShaderInfoLog(s); gl.deleteShader(s); throw new Error('PyroFX shader: ' + log); }
+      return s;
+    }
+    function prog(fs, vs) {
+      const p = keep('Program', gl.createProgram());
+      const a = shader(gl.VERTEX_SHADER, vs || VS), b = shader(gl.FRAGMENT_SHADER, vs ? fs : HEAD + COMMON + fs);
+      gl.attachShader(p, a); gl.attachShader(p, b);
+      if (!vs) gl.bindAttribLocation(p, 0, 'aPos');
+      gl.linkProgram(p); gl.deleteShader(a); gl.deleteShader(b);
+      if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error('PyroFX link: ' + gl.getProgramInfoLog(p));
+      const u = {}, n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+      for (let i = 0; i < n; i++) { const name = gl.getActiveUniform(p, i).name.replace(/\[0\]$/, ''); u[name] = gl.getUniformLocation(p, name); }
+      return { p, u };
+    }
+    function target(w, h, half, mip) {
+      const t = keep('Texture', gl.createTexture()); gl.bindTexture(gl.TEXTURE_2D, t);
+      if (half) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, w, h, 0, gl.RGBA, gl.HALF_FLOAT, null);
+      else gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mip ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      const fb = keep('Framebuffer', gl.createFramebuffer()); gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0);
+      gl.viewport(0, 0, w, h); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+      if (mip) gl.generateMipmap(gl.TEXTURE_2D);
+      return { t, fb, w, h };
+    }
+    function free(rt) {
+      if (!rt) return;
+      gl.deleteTexture(rt.t); gl.deleteFramebuffer(rt.fb);
+      for (let i = res.length - 1; i >= 0; i--) if (res[i][1] === rt.t || res[i][1] === rt.fb) res.splice(i, 1);
+    }
+    // run a full-screen pass; uniforms: number | [x,y(,z)] | render target | {tex3d}
+    function run(P, dst, uniforms) {
+      gl.useProgram(P.p); let unit = 0;
+      for (const k in uniforms) {
+        const loc = P.u[k], v = uniforms[k]; if (!loc) continue;
+        if (typeof v === 'number') gl.uniform1f(loc, v);
+        else if (v.length === 2) gl.uniform2f(loc, v[0], v[1]);
+        else if (v.length === 3) gl.uniform3f(loc, v[0], v[1], v[2]);
+        else if (v.length === 4) gl.uniform4f(loc, v[0], v[1], v[2], v[3]);
+        else if (v.tex3d) { gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_3D, v.tex3d); gl.uniform1i(loc, unit++); }
+        else { gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, v.t); gl.uniform1i(loc, unit++); }
+      }
+      if (dst) { gl.bindFramebuffer(gl.FRAMEBUFFER, dst.fb); gl.viewport(0, 0, dst.w, dst.h); }
+      else { gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight); }
+      gl.bindBuffer(gl.ARRAY_BUFFER, quad); gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+    function destroy() {
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.useProgram(null);
+      for (const [kind, obj] of res) gl['delete' + kind](obj);
+      res.length = 0;
+    }
+    gl.disable(gl.DEPTH_TEST); gl.disable(gl.BLEND);
+    return { gl, prog, target, free, run, keep, destroy };
+  }
+
+  let _sup;
+  function supported() {
+    if (_sup !== undefined) return _sup;
+    try {
+      const c = document.createElement('canvas'), gl = c.getContext('webgl2');
+      _sup = !!(gl && (gl.getExtension('EXT_color_buffer_float') || gl.getExtension('EXT_color_buffer_half_float')));
+      const l = gl && gl.getExtension('WEBGL_lose_context'); if (l) l.loseContext();
+    } catch (e) { _sup = false; }
+    return _sup;
+  }
+  const reducedMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
+  const clamp01 = v => Math.max(0, Math.min(1, +v || 0));
+  function sizeOf(canvas) {
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const cw = Math.max(1, canvas.clientWidth || canvas.width || 300), ch = Math.max(1, canvas.clientHeight || canvas.height || 150);
+    return { dpr, cw, ch, w: Math.max(2, Math.round(cw * dpr)), h: Math.max(2, Math.round(ch * dpr)) };
+  }
+  function pickQuality(q, s) {
+    if (q === 'high' || q === 'low') return q;
+    return (Math.min(s.cw, s.ch) < 520 || s.dpr < 1.5 || s.w * s.h < 9e5) ? 'low' : 'high';
+  }
+  function watchLoss(canvas, st) {
+    const lost = e => { e.preventDefault(); st.dead = true; };
+    canvas.addEventListener('webglcontextlost', lost);
+    return () => canvas.removeEventListener('webglcontextlost', lost);
+  }
+
+  // ================================================================ INK
+  // Absorbance spectra (Beer-Lambert): thin films read as a translucent tint, thick ones saturate and darken.
+  const INKS = {
+    ember: [.06, 1.6, 2.7],      // Claude Opus: vivid red-orange
+    amber: [.03, .55, 2.3],      // Claude Sonnet
+    sand: [.17, .33, .66],       // Claude Haiku
+    graphite: [2.2, 2.15, 2.0],  // GPT: near-black ink
+    cobalt: [2.5, 1.25, .30],    // Gemini: blue
+  };
+
+  function ink(canvas, opts) {
+    const G = makeGL(canvas); if (!G) return null;
+    const { gl, prog, target, free, run } = G;
+    const st = { dead: false }, unwatch = watchLoss(canvas, st);
+    const NB = 'uniform vec2 tx;\n#define L(t) texture(t, vUv-vec2(tx.x,0.))\n#define R(t) texture(t, vUv+vec2(tx.x,0.))\n#define T(t) texture(t, vUv+vec2(0.,tx.y))\n#define B(t) texture(t, vUv-vec2(0.,tx.y))\n';
+    // velocity texture: xy = velocity (canvas heights per second), z = heat (drives buoyancy, decays), w unused
+    const P = {
+      splat: prog(`uniform sampler2D src; uniform vec2 pt; uniform vec4 val; uniform float r, asp;
+        void main(){ vec2 p = vUv-pt; p.x *= asp; o = texture(src,vUv) + exp(-dot(p,p)/(r*r))*val; }`),
+      curl: prog(NB + `uniform sampler2D vel; void main(){ o = vec4(.5*(R(vel).y-L(vel).y-T(vel).x+B(vel).x)); }`),
+      force: prog(NB + `uniform sampler2D vel, cu; uniform float dt, conf, buoy, time, asp;
+        void main(){ vec4 v = texture(vel,vUv); float C = texture(cu,vUv).x;
+          vec2 f = .5*vec2(abs(T(cu).x)-abs(B(cu).x), abs(R(cu).x)-abs(L(cu).x)); f /= length(f)+1e-5; f *= conf*C; f.y = -f.y;
+          vec2 q = vec2(vUv.x*asp, vUv.y);
+          float wob = vn(q*7.+vec2(time*.31,-time*.5)) - vn(q*7.+vec2(-time*.27,time*.4)+19.);
+          v.xy += dt*(f + vec2(wob*.9, buoy)*v.z);
+          o = v; }`),
+      div: prog(NB + `uniform sampler2D vel; void main(){ vec2 C = texture(vel,vUv).xy; float l=L(vel).x, r=R(vel).x, t=T(vel).y, b=B(vel).y;
+          if(vUv.x-tx.x<0.) l=-C.x; if(vUv.x+tx.x>1.) r=-C.x; if(vUv.y+tx.y>1.) t=-C.y; if(vUv.y-tx.y<0.) b=-C.y;
+          o = vec4(.5*(r-l+t-b)); }`),
+      pres: prog(NB + `uniform sampler2D pr, dv; void main(){ o = vec4((L(pr).x+R(pr).x+T(pr).x+B(pr).x-texture(dv,vUv).x)*.25); }`),
+      grad: prog(NB + `uniform sampler2D pr, vel; void main(){ vec4 v = texture(vel,vUv); v.xy -= .5*vec2(R(pr).x-L(pr).x, T(pr).x-B(pr).x);
+          if(vUv.x-tx.x<0. || vUv.x+tx.x>1.) v.x = 0.; if(vUv.y-tx.y<0. || vUv.y+tx.y>1.) v.y = 0.; o = v; }`),
+      advV: prog(`uniform sampler2D vel; uniform float dt, asp, damp, cool;
+        void main(){ vec2 v = texture(vel,vUv).xy; vec4 s = texture(vel, vUv - dt*v*vec2(1./asp,1.));
+          s.xy /= 1.+damp*dt; s.z /= 1.+cool*dt; o = s; }`),
+      // dye: rgb = absorbance, a = pigment amount. Velocity is fetched bicubically so the coarse grid never shows.
+      // MacCormack advection (forward, backward, corrected + clamped) keeps filaments from smearing away
+      trace: prog(`uniform sampler2D vel, src; uniform vec2 vsz; uniform float dt, asp;
+        void main(){ vec2 v = bic(vel, vUv, vsz, 0.).xy; o = textureLod(src, vUv - dt*v*vec2(1./asp,1.), 0.); }`),
+      mac: prog(`uniform sampler2D vel, src, fwd, bwd; uniform vec2 vsz, dsz; uniform float dt, asp, fade;
+        void main(){ vec2 v = bic(vel, vUv, vsz, 0.).xy; vec2 c = vUv - dt*v*vec2(1./asp,1.), h = .5/dsz;
+          vec4 a = textureLod(src, c+vec2(-h.x,-h.y), 0.), b = textureLod(src, c+vec2(h.x,-h.y), 0.), d = textureLod(src, c+vec2(-h.x,h.y), 0.), e = textureLod(src, c+h, 0.);
+          vec4 r = textureLod(fwd, vUv, 0.) + .4*(textureLod(src, vUv, 0.) - textureLod(bwd, vUv, 0.));
+          r = clamp(r, min(min(a,b),min(d,e)), max(max(a,b),max(d,e)));
+          o = max(r/(1.+(fade*(1.+.9*r.a)+smoothstep(.86,1.,vUv.y)*1.6)*dt), 0.); }`),   // thick ink thins out faster, so a long pour never turns to mud
+      copy: prog(`uniform sampler2D src; void main(){ o = textureLod(src, vUv, 0.); }`),
+      show: prog(`uniform sampler2D dye; uniform vec2 res, dsz; uniform float dpr, asp;
+        float hgt(float d){ return 1.-exp(-d*1.5); }
+        void main(){
+          vec2 px = 1./dsz;
+          vec4 c0 = textureLod(dye, vUv, 0.), c2 = textureLod(dye, vUv, 2.2);
+          vec4 c = max(c0 + (c0-c2)*.3, 0.);                          // unsharp mask: crisper filaments
+          // thickness normal from the (slightly smoothed) density field
+          vec2 e = px*2.6;
+          float hl = hgt(textureLod(dye, vUv-vec2(e.x,0.), 1.3).a), hr = hgt(textureLod(dye, vUv+vec2(e.x,0.), 1.3).a);
+          float hb = hgt(textureLod(dye, vUv-vec2(0.,e.y), 1.3).a), ht = hgt(textureLod(dye, vUv+vec2(0.,e.y), 1.3).a);
+          vec2 g = vec2(hr-hl, ht-hb)/(2.*e.y);                         // per canvas-height
+          float th = hgt(c.a);
+          vec3 n = normalize(vec3(-g*.011, 1.));
+          vec3 Ld = normalize(vec3(-.48,.62,.62));
+          float dif = dot(n, Ld) - Ld.z;                                // <0 on slopes facing away from the light
+          float edge = min(length(g)*.011, 1.6);
+          // deeper, out-of-focus pigment behind the sharp layer, and the shadow the cloud casts on the paper below
+          vec2 off = vec2(.011/asp, -.016);
+          vec4 deep = bic(dye, vUv + off*.45, dsz/8., 3.);
+          float sh = 1.-exp(-bic(dye, vUv + off, dsz/16., 4.).a*.9);
+          float ao = 1.-exp(-deep.a*.5);
+          vec3 A = c.rgb*(1. + .42*edge - .75*dif) + deep.rgb*.26;
+          float gr = vn(gl_FragCoord.xy/dpr*.8) - .5;                   // pigment granulation in the paper tooth
+          A *= 1. + gr*.22*smoothstep(.0,.5,th);
+          A = 2.7*(1.-exp(-A/2.7));                                     // soft shoulder: thick ink stays coloured, not black
+          vec3 pap = paper(gl_FragCoord.xy, dpr);
+          pap *= 1. - sh*(1.-th*.7)*vec3(.105,.115,.13) - ao*.03;
+          vec3 col = pap*exp(-A);
+          // wet sheen: a tight highlight on steep, thick ridges
+          vec3 hv = normalize(Ld + vec3(0.,0.,1.));
+          float sp = pow(max(dot(n,hv),0.), 70.)*smoothstep(.25,.8,th)*smoothstep(.15,.6,edge);
+          col += sp*.34*(1.-col);
+          col += max(dif,0.)*.10*th*(1.-col);
+          o = vec4(col, 1.);
+        }`),
+    };
+
+    let S, quality, F1, F2, V, Vb, D, Db, Pr, Prb, Dv, Cu, sw, sh, dw, dh, last = 0, time = 0, calm = false;
+    const emitters = [], reduce = reducedMotion();
+    const swapV = () => { const t = V; V = Vb; Vb = t; }, swapD = () => { const t = D; D = Db; Db = t; }, swapP = () => { const t = Pr; Pr = Prb; Prb = t; };
+
+    function alloc(preserve) {
+      S = sizeOf(canvas); quality = pickQuality(opts && opts.quality, S);
+      canvas.width = S.w; canvas.height = S.h;
+      const asp = S.w / S.h, hi = quality === 'high';
+      // grids are sized by cell count so portrait and landscape get the same detail
+      const cells = hi ? 70000 : 34000; sh = Math.max(8, Math.round(Math.sqrt(cells / asp))); sw = Math.max(8, Math.round(sh * asp));
+      const k = Math.min(1, Math.sqrt((hi ? 1.05e6 : 5.2e5) / (S.w * S.h)));
+      dw = Math.max(16, Math.round(S.w * k)); dh = Math.max(16, Math.round(S.h * k));
+      const oV = V, oD = D, old = [V, Vb, D, Db, Pr, Prb, Dv, Cu, F1, F2];
+      F1 = F2 = null; { F1 = target(dw, dh, true); F2 = target(dw, dh, true); }
+      V = target(sw, sh, true); Vb = target(sw, sh, true);
+      D = target(dw, dh, true, true); Db = target(dw, dh, true, true);
+      Pr = target(sw, sh, true); Prb = target(sw, sh, true); Dv = target(sw, sh, true); Cu = target(sw, sh, true);
+      if (preserve && oV) { run(P.copy, V, { src: oV }); run(P.copy, D, { src: oD }); }
+      old.forEach(free);
+    }
+    function splat(x, y, r, vel, dye) {
+      const asp = sw / sh;
+      if (vel) { run(P.splat, Vb, { src: V, pt: [x, y], val: vel, r, asp }); swapV(); }
+      if (dye) { run(P.splat, Db, { src: D, pt: [x, y], val: dye, r, asp }); swapD(); }
+    }
+
+    function frame(now) {
+      if (st.dead) return;
+      let dt = last ? (now - last) / 1000 : 1 / 60; last = now;
+      dt = Math.max(0, Math.min(1 / 30, dt)); if (reduce) dt *= .22;
+      if (dt <= 0) dt = 1e-4;
+      time += dt;
+      const asp = S.w / S.h, tx = [1 / sw, 1 / sh], hi = quality === 'high';
+
+      // pours: each is a short-lived source at the bottom edge; buoyancy does the lifting
+      for (let i = emitters.length - 1; i >= 0; i--) {
+        const e = emitters[i], k = Math.min(dt, e.life) / e.dur; e.life -= dt;
+        const jx = Math.sin(time * 9.1 + e.ph) * .012, r = e.r * (1 + .25 * Math.sin(time * 13 + e.ph * 2));
+        const a = e.amt * k;
+        splat(e.x + jx / asp, .012, r, [e.vx * k, e.vy * k, e.heat * k, 0], [e.c[0] * a, e.c[1] * a, e.c[2] * a, a]);
+        if (e.life <= 0) emitters.splice(i, 1);
+      }
+
+      run(P.curl, Cu, { tx, vel: V });
+      run(P.force, Vb, { tx, vel: V, cu: Cu, dt, conf: calm ? 2 : 10, buoy: calm ? .25 : 1.7, time, asp }); swapV();
+      run(P.div, Dv, { tx, vel: V });
+      const it = hi ? 22 : 14;
+      for (let i = 0; i < it; i++) { run(P.pres, Prb, { tx, pr: Pr, dv: Dv }); swapP(); }
+      run(P.grad, Vb, { tx, pr: Pr, vel: V }); swapV();
+      run(P.advV, Vb, { vel: V, dt, asp, damp: calm ? 1.6 : .22, cool: calm ? 2.5 : .30 }); swapV();
+      const fade = calm ? .003 : .085, vsz = [sw, sh];
+      run(P.trace, F1, { vel: V, src: D, vsz, dt, asp });
+      run(P.trace, F2, { vel: V, src: F1, vsz, dt: -dt, asp });
+      run(P.mac, Db, { vel: V, src: D, fwd: F1, bwd: F2, vsz, dsz: [dw, dh], dt, asp, fade });
+      swapD();
+      gl.bindTexture(gl.TEXTURE_2D, D.t); gl.generateMipmap(gl.TEXTURE_2D);
+      run(P.show, null, { dye: D, res: [S.w, S.h], dsz: [dw, dh], dpr: S.dpr, asp });
+    }
+
+    alloc(false);
+    return {
+      pour(x01, strength01, color) {
+        if (st.dead) return;
+        const s = clamp01(strength01), c = INKS[color] || INKS.ember, x = Math.max(.02, Math.min(.98, +x01 || 0));
+        if (emitters.length >= 28) emitters.shift();
+        const dur = .32 + .25 * s, n = Math.sqrt(Math.max(.5, Math.min(1, S.w / S.h)));   // narrower canvas, smaller pours
+        emitters.push({ x, c, dur, life: dur, ph: Math.random() * 6.28, r: (.010 + .017 * s) * n,
+          amt: (.9 + 1.9 * s) * n, heat: .7 + 2.3 * s, vx: (Math.random() - .5) * .10, vy: .10 + .30 * s });
+      },
+      stir(x01, y01, dx01, dy01) {
+        if (st.dead) return;
+        const asp = S.w / S.h, k = 38, m = 2.2;
+        const vx = Math.max(-m, Math.min(m, (+dx01 || 0) * asp * k)), vy = Math.max(-m, Math.min(m, -(+dy01 || 0) * k));
+        splat(clamp01(x01), 1 - clamp01(y01), .055, [vx, vy, 0, 0], null);
+      },
+      calm(on) { calm = !!on; },
+      frame,
+      resize() { if (!st.dead) alloc(true); },
+      reset() { if (st.dead) return; emitters.length = 0; last = 0; calm = false; alloc(false); },
+      destroy() { if (st.dead) return; st.dead = true; unwatch(); emitters.length = 0; G.destroy(); },
+    };
+  }
+
+  // ================================================================ FIRE
+  // Tileable 3-D gradient-noise volume (64^3). g/b are the same field read at shifted offsets, which is free decorrelation.
+  function noiseVolume(gl) {
+    const N = 64, data = new Uint8Array(N * N * N * 4), f = new Float32Array(N * N * N);
+    const perm = new Uint8Array(512); { let s = 1234567; const p = []; for (let i = 0; i < 256; i++) p[i] = i;
+      for (let i = 255; i > 0; i--) { s = (s * 1664525 + 1013904223) >>> 0; const j = s % (i + 1); const t = p[i]; p[i] = p[j]; p[j] = t; }
+      for (let i = 0; i < 512; i++) perm[i] = p[i & 255]; }
+    const GR = [1, 1, 0, -1, 1, 0, 1, -1, 0, -1, -1, 0, 1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, -1, 0, 1, 1, 0, -1, 1, 0, 1, -1, 0, -1, -1];
+    const fade = t => t * t * t * (t * (t * 6 - 15) + 10);
+    function octave(period, amp, seed) {
+      const sc = period / N; let i = 0;
+      const g = (ix, iy, iz, x, y, z) => { const h = perm[perm[perm[(ix % period) + seed] + (iy % period)] + (iz % period)] % 12 * 3; return GR[h] * x + GR[h + 1] * y + GR[h + 2] * z; };
+      for (let z = 0; z < N; z++) { const pz = z * sc, iz = Math.floor(pz), fz = pz - iz, wz = fade(fz);
+        for (let y = 0; y < N; y++) { const py = y * sc, iy = Math.floor(py), fy = py - iy, wy = fade(fy);
+          for (let x = 0; x < N; x++) { const px = x * sc, ix = Math.floor(px), fx = px - ix, wx = fade(fx);
+            const a = g(ix, iy, iz, fx, fy, fz), b = g(ix + 1, iy, iz, fx - 1, fy, fz), c = g(ix, iy + 1, iz, fx, fy - 1, fz), d = g(ix + 1, iy + 1, iz, fx - 1, fy - 1, fz);
+            const e = g(ix, iy, iz + 1, fx, fy, fz - 1), ff = g(ix + 1, iy, iz + 1, fx - 1, fy, fz - 1), gg = g(ix, iy + 1, iz + 1, fx, fy - 1, fz - 1), hh = g(ix + 1, iy + 1, iz + 1, fx - 1, fy - 1, fz - 1);
+            const x0 = a + (b - a) * wx, x1 = c + (d - c) * wx, x2 = e + (ff - e) * wx, x3 = gg + (hh - gg) * wx;
+            const y0 = x0 + (x1 - x0) * wy, y1 = x2 + (x3 - x2) * wy;
+            f[i++] += amp * (y0 + (y1 - y0) * wz);
+          } } }
+    }
+    octave(4, 1, 0); octave(8, .5, 7); octave(16, .25, 13);
+    const at = (x, y, z) => f[((z & 63) * N + (y & 63)) * N + (x & 63)];
+    const q = v => Math.max(0, Math.min(255, Math.round((.5 + v * .62) * 255)));
+    let i = 0;
+    for (let z = 0; z < N; z++) for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      data[i++] = q(at(x, y, z)); data[i++] = q(at(x + 23, y + 37, z + 11)); data[i++] = q(at(x + 41, y + 13, z + 29)); data[i++] = 255;
+    }
+    const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_3D, t);
+    gl.texImage3D(gl.TEXTURE_3D, 0, gl.RGBA8, N, N, N, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+    gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_S, gl.REPEAT); gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_T, gl.REPEAT); gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_R, gl.REPEAT);
+    return t;
+  }
+
+  function fire(canvas, opts) {
+    const G = makeGL(canvas); if (!G) return null;
+    const { gl, prog, target, free, run } = G;
+    const st = { dead: false }, unwatch = watchLoss(canvas, st);
+    const COV = .82;      // the volume buffer covers the lower 82% of the canvas
+    const FIELD = `
+      uniform sampler3D nz; uniform float time, H, flare, asp, xs;
+      const float D = .30;
+      // height of the fire bed at (x,z): slow-moving mounds so the fire has groups and gaps
+      float bed(vec2 xz){ xz.x *= xs; float a = texture(nz, vec3(xz.x*.42+.37, time*.021, xz.y*.4)).r, b = texture(nz, vec3(xz.x*1.1+.11, time*.05, xz.y*.9+.5)).g;
+        return H*(.30 + 1.25*smoothstep(.2,.8,a) + .45*(b-.5)); }`;
+    const P = {
+      // pass 1: raymarch a slab of fire at reduced resolution. out: r = mean temperature * A, g = A (opacity), b = hottest * A
+      march: prog(FIELD + `uniform sampler2D prev; uniform vec2 res; uniform float cov, jo, keep; uniform int steps;
+        void main(){
+          vec2 uv = gl_FragCoord.xy/res;
+          vec3 P0 = vec3((uv.x-.5)*asp, uv.y*cov, 0.), cam = vec3(0., .34, -2.3);
+          vec3 dp = (P0-cam)/2.3;                                       // per unit of z
+          float n = float(steps), dz = 2.*D/n;
+          float jit = .5 + jo;
+          float tau = 0., ws = 0., ts = 0., tm = 0.;
+          for(int i=0;i<steps;i++){
+            float z = -D + (float(i)+jit)*dz; vec3 p = P0 + dp*z;
+            p.y = max(p.y, 0.);
+            float zf = 1. - z*z/(D*D);
+            float h = bed(p.xz);
+            float u = p.y/h;
+            if(u > 2.1) continue;
+            vec3 q = vec3(p.x*1.3*xs, p.y*.44 - time*.52, p.z*.6);
+            vec3 w = texture(nz, q*.45 + vec3(.2, -time*.1, time*.03)).rgb - .5;
+            q.xz += w.xy*(.10+.34*u);                                   // lateral sway grows with height
+            float n1 = texture(nz, q).r, n2 = texture(nz, q*2.6 + vec3(.3, -time*.55, .7)).g;
+            float nn = (n1-.5)*1.5 + (n2-.5)*.5;
+            float f = (1.-u) + nn*(.35+2.1*u) + flare*.25*(1.-u);
+            f = f*(.35+.65*zf) - (1.-zf)*.25;
+            float d = smoothstep(0., .38, f)*(1.-smoothstep(.70,.80,p.y));
+            if(d <= 0.) continue;
+            float T = clamp(min(f,1.)*(.30+.75*n1+.5*(n2-.5))*(.55+.45*zf)*(1.+flare*.22), 0., 1.5);
+            float wgt = d*(.2 + T);
+            tau += d*dz*7.; ts += T*wgt; ws += wgt; tm = max(tm, T*d);
+            if(tau > 5.) break;
+          }
+          float A = 1.-exp(-tau);
+          o = mix(vec4(ts/max(ws,1e-4)/1.5*A, A, tm/1.5*A, 1.), texture(prev, vUv), keep);
+        }`),
+      // pass 2: full-resolution composite on paper: light spill, smoke wash, colour ramp, grain
+      comp: prog(FIELD + `uniform sampler2D fb; uniform vec2 res, fsz; uniform float cov, dpr, smokeAmt;
+        vec3 ramp(float T){
+          vec3 c = mix(vec3(.36,.035,.03), vec3(.74,.085,.03), smoothstep(.0,.2,T));
+          c = mix(c, vec3(.93,.25,.035), smoothstep(.16,.38,T));
+          c = mix(c, vec3(.99,.50,.06), smoothstep(.34,.56,T));
+          c = mix(c, vec3(1.,.74,.20), smoothstep(.52,.76,T));
+          return mix(c, vec3(1.,.90,.56), smoothstep(.78,1.,T));
+        }
+        void main(){
+          vec2 uv = gl_FragCoord.xy/res; vec2 w = vec2((uv.x-.5)*asp, uv.y);
+          vec3 col = paper(gl_FragCoord.xy, dpr);
+          float hb = bed(vec2(w.x, 0.));
+          // smoke: thin charcoal wash drifting up from the flame tips (subtractive, like graphite dust on paper)
+          vec3 sq = vec3(w.x*.5, w.y*.42 - time*.06, time*.02);
+          vec3 sw = texture(nz, sq*.7+.3).rgb-.5; sq.xy += sw.xy*.3;
+          float sb = texture(nz, sq).r;                                   // soft billows
+          vec3 s2 = vec3(w.x*1.1, w.y*.8 - time*.13, time*.035) + vec3(sw.yz*.55, 0.);
+          float wisp = 1.-abs(2.*texture(nz, s2).g-1.); wisp *= wisp*wisp;  // thin curling threads
+          float above = (w.y - H*.95)/(.26+.55*H);
+          float env = smoothstep(-.25,.4,above)*(1.-smoothstep(.5,1.7,above));
+          float smoke = (smoothstep(.42,.8,sb)*.30 + wisp*smoothstep(.38,.62,sb)*.26)*env*smokeAmt;
+          col *= exp(-smoke*vec3(.42,.46,.50));
+          // warm light spilling on the paper around the fire
+          float spill = exp(-max(w.y-hb*.6,0.)/(.10+.25*H))*(.35+.65*H)*(1.+flare*.8);
+          col *= 1. - spill*vec3(.0,.055,.14);
+          vec4 f = vec4(0.);
+          if(uv.y < cov) f = bic(fb, vec2(uv.x, uv.y/cov), fsz, 0.);
+          float A = f.g;
+          if(A > .003){
+            float T = f.r/A*1.5, Tm = f.b/A*1.5;
+            float gr = h21(gl_FragCoord.xy+17.)-.5;
+            T = mix(T, Tm, .25) + gr*.03;
+            float a = smoothstep(.2,.52,A);                           // crisp-ish silhouette from a soft low-res field
+            float body = smoothstep(.3,.95,A);
+            T *= .55+.45*body;                                         // thin outer licks stay deep red
+            float fs = texture(nz, vec3(w.x*4.6, w.y*1.1 - time*1.5, time*.15)).r - .5;   // fine upward striations
+            T += fs*.30*body*smoothstep(.15,.6,T);
+            vec3 fc = ramp(clamp(T*1.08 - .04, 0., 1.));
+            fc *= 1. - .10*(1.-body);                                  // darker rim
+            col = mix(col, fc, a*(.90+.10*body));
+          }
+          o = vec4(col, 1.);
+        }`),
+      ember: prog(`#version 300 es
+        precision highp float; in vec4 vE; in vec2 vD; out vec4 o;
+        void main(){ vec2 p = gl_PointCoord*2.-1.; p.y = -p.y;
+          float al = dot(p, vD); vec2 pr = p - vD*al;
+          float d = length(vec2(max(abs(al)-.5,0.), length(pr)*2.1));    // capsule along the velocity
+          float m = 1.-smoothstep(.25,.45,d); if(m<=0.) discard;
+          float age = vE.x;
+          vec3 hot = mix(vec3(1.,.58,.08), vec3(.90,.18,.03), smoothstep(.1,.55,age));
+          vec3 c = mix(hot, vec3(.30,.27,.25), smoothstep(.6,.95,age));
+          c = mix(c*vec3(.75,.5,.5), c, 1.-smoothstep(.05,.32,d));
+          o = vec4(c, m*vE.y); }`,
+        `#version 300 es
+        in vec4 aE; in vec4 aV; out vec4 vE; out vec2 vD; uniform float px;
+        void main(){ vE = vec4(aE.w, aV.z, 0., 0.); vD = aV.xy; gl_Position = vec4(aE.xy*2.-1., 0., 1.); gl_PointSize = aE.z*px; }`),
+    };
+    const nz = G.keep('Texture', noiseVolume(gl));
+    const MAXE = 420, ebuf = new Float32Array(MAXE * 8), evbo = G.keep('Buffer', gl.createBuffer());
+    gl.bindBuffer(gl.ARRAY_BUFFER, evbo); gl.bufferData(gl.ARRAY_BUFFER, ebuf.byteLength, gl.DYNAMIC_DRAW);
+    const aE = gl.getAttribLocation(P.ember.p, 'aE'), aV = gl.getAttribLocation(P.ember.p, 'aV');
+
+    let S, quality, FB, FB2, fno = 0, fw, fh, steps, last = 0, time = 0, heat = .15, heatT = .15, flare = 0, spawnAcc = 0;
+    let embers = [];
+    const reduce = reducedMotion();
+
+    function alloc() {
+      S = sizeOf(canvas); quality = pickQuality(opts && opts.quality, S);
+      canvas.width = S.w; canvas.height = S.h;
+      const hi = quality === 'high', asp = S.w / S.h;
+      const k = Math.min(1, Math.sqrt((hi ? 4.4e5 : 2.4e5) / (S.w * S.h * COV)));
+      fw = Math.round(S.w * k); fh = Math.round(S.h * COV * k);
+      fw = Math.max(16, fw); fh = Math.max(16, fh); steps = hi ? 34 : 22;
+      free(FB); free(FB2); FB = target(fw, fh, false); FB2 = target(fw, fh, false); fno = 0;
+    }
+    function spawn(n, boost) {
+      const asp = S.w / S.h, Hh = .06 + .26 * heat;
+      for (let i = 0; i < n && embers.length < MAXE; i++) {
+        const life = (.6 + Math.random() * Math.random() * 2.4) * (1 + boost * .25);
+        embers.push({ x: Math.random(), y: Math.random() * Hh * (.5 + .8 * boost), vx: (Math.random() - .5) * (.2 + boost * .35) / asp,
+          vy: (.10 + Math.random() * .32) * (.7 + heat * .6) * (1 + boost * 1.3), life, age: 0, s: 1.5 + Math.pow(Math.random(), 2) * 3.6 + boost * .6, ph: Math.random() * 6.28 });
+      }
+    }
+
+    function frame(now) {
+      if (st.dead) return;
+      let dt = last ? (now - last) / 1000 : 1 / 60; last = now;
+      dt = Math.max(0, Math.min(1 / 20, dt)); if (reduce) dt *= .15;
+      time += dt * (1 + flare * .6);
+      heat += (heatT - heat) * (1 - Math.exp(-dt * 2.6));
+      flare *= Math.exp(-dt * 1.9);
+      const asp = S.w / S.h;
+      const H = .05 + .15 * Math.pow(heat, 1.1) + flare * .03;
+      const U = { nz: { tex3d: nz }, time, H, flare, asp, xs: Math.max(1, Math.min(1.7, .9 / asp)) };   // narrower tongues on portrait canvases
+      { const t = FB; FB = FB2; FB2 = t; }
+      run(P.march, FB, Object.assign({ prev: FB2, res: [fw, fh], cov: COV, jo: (fno * .61803) % 1 - .5, keep: fno ? .38 : 0 }, U)); fno++;
+      run(P.comp, null, Object.assign({ fb: FB, res: [S.w, S.h], fsz: [fw, fh], cov: COV, dpr: S.dpr, smokeAmt: .2 + .8 * heat + flare * .3 }, U));
+
+      // embers: a small CPU particle set drawn as velocity-aligned capsules
+      spawnAcc += dt * (1.5 + 20 * heat * heat + flare * 14);
+      const ns = Math.floor(spawnAcc); spawnAcc -= ns; if (ns) spawn(ns, flare * .5);
+      let n = 0;
+      for (let i = embers.length - 1; i >= 0; i--) {
+        const e = embers[i]; e.age += dt;
+        if (e.age >= e.life || e.y > 1.05) { embers.splice(i, 1); continue; }
+        const k = e.age / e.life;
+        e.vx += (Math.sin(e.ph + time * 3.1 + e.y * 9) * .22 / asp - e.vx * .9) * dt;
+        e.vy += (-.05 - e.vy * .55) * dt;
+        e.x += e.vx * dt; e.y += e.vy * dt;
+        const sp = Math.hypot(e.vx * asp, e.vy) || 1e-5, o = n * 8;
+        ebuf[o] = e.x; ebuf[o + 1] = e.y; ebuf[o + 2] = e.s * (1 - k * .5) * (1 + Math.min(sp * 4, 2.2)); ebuf[o + 3] = k;
+        ebuf[o + 4] = e.vx * asp / sp; ebuf[o + 5] = e.vy / sp; ebuf[o + 6] = Math.min(1, k * 12) * (1 - k * k) * .95; ebuf[o + 7] = 0;
+        n++;
+      }
+      if (n) {
+        gl.useProgram(P.ember.p); gl.uniform1f(P.ember.u.px, S.dpr);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.viewport(0, 0, S.w, S.h);
+        gl.bindBuffer(gl.ARRAY_BUFFER, evbo); gl.bufferSubData(gl.ARRAY_BUFFER, 0, ebuf.subarray(0, n * 8));
+        gl.enableVertexAttribArray(aE); gl.vertexAttribPointer(aE, 4, gl.FLOAT, false, 32, 0);
+        gl.enableVertexAttribArray(aV); gl.vertexAttribPointer(aV, 4, gl.FLOAT, false, 32, 16);
+        gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        gl.drawArrays(gl.POINTS, 0, n);
+        gl.disable(gl.BLEND);
+        if (aE !== 0) gl.disableVertexAttribArray(aE); if (aV !== 0) gl.disableVertexAttribArray(aV);
+      }
+    }
+
+    alloc();
+    gl.useProgram(P.march.p); gl.uniform1i(P.march.u.steps, steps);
+    return {
+      setHeat(h01) { heatT = clamp01(h01); },
+      burst(strength01) { if (st.dead) return; const s = clamp01(strength01 === undefined ? 1 : strength01); flare = Math.min(1.6, flare + .35 + .75 * s); spawn(Math.round(10 + 34 * s), .5 + s); },
+      frame,
+      resize() { if (st.dead) return; alloc(); gl.useProgram(P.march.p); gl.uniform1i(P.march.u.steps, steps); },
+      reset() { if (st.dead) return; embers = []; flare = 0; heat = heatT = .15; last = 0; spawnAcc = 0; },
+      destroy() { if (st.dead) return; st.dead = true; unwatch(); embers = []; G.destroy(); },
+    };
+  }
+
+  window.PyroFX = { supported, ink, fire };
+})();
+
+</script>
+<script>
+(function () {
+'use strict';
+const C = window.PyroCore, $ = id => document.getElementById(id);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const DAY = 864e5;
+const iso = ms => new Date(ms).toISOString().slice(0, 10);
+const ymd = s => s.replace(/-/g, '/');
+const INK = '#1d1b18', PAPER = '#faf8f4', T0 = '#fffdf9', T1 = '#efeae0', T2 = '#d8d1c3', T3 = '#8f887b', EM = '#ea4a0c', EMD = '#b9390a', DK1 = '#34302a', DK2 = '#24211d', DK3 = '#151412';
+const S = 0.866;
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const ease = t => 1 - Math.pow(1 - clamp(t), 3);
+const io = t => { t = clamp(t); return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+const seg = (p, a, b) => clamp((p - a) / (b - a));
+const rnd = n => { let x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const f1 = v => (Math.round(v * 10) / 10);
+const P = (x, y, z = 0) => [(x - y) * S, (x + y) * .5 - z];
+const pp = (...a) => a.map(q => { const r = P(q[0], q[1], q[2] || 0); return f1(r[0]) + ',' + f1(r[1]); }).join(' ');
+const fmt = v => v >= 10000 ? Math.round(v).toLocaleString('en-US') : String(v);
+const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+let uid = 0;
+
+// ---------- Isometric kit ----------
+function box(x, y, z, w, d, h, c = {}) {
+  const s = c.s || INK;
+  return `<g ${c.a || ''} stroke="${s}"><polygon fill="${c.l || T1}" points="${pp([x, y + d, z], [x + w, y + d, z], [x + w, y + d, z + h], [x, y + d, z + h])}"/><polygon fill="${c.r || T2}" points="${pp([x + w, y + d, z], [x + w, y, z], [x + w, y, z + h], [x + w, y + d, z + h])}"/><polygon fill="${c.t || T0}" points="${pp([x, y, z + h], [x + w, y, z + h], [x + w, y + d, z + h], [x, y + d, z + h])}"/></g>`;
+}
+const ground = (x, y, w, d, fill = T2, a = '') => `<polygon ${a} fill="${fill}" stroke="none" points="${pp([x, y], [x + w, y], [x + w, y + d], [x, y + d])}"/>`;
+const mTop = (z = 0, ox = 0, oy = 0) => `matrix(${S},.5,${-S},.5,${f1((ox - oy) * S)},${f1((ox + oy) * .5 - z)})`;
+const mLeft = (Y, ox, zTop) => `matrix(${S},.5,0,1,${f1((ox - Y) * S)},${f1((ox + Y) * .5 - zTop)})`;
+const mRight = (X, oy, zTop) => `matrix(${S},-.5,0,1,${f1((X - oy) * S)},${f1((X + oy) * .5 - zTop)})`;
+const at = (a, L) => { const v = L ? a[0] : a[1]; return `transform="translate(${v[0]},${v[1]}) scale(${v[2] || 1})"`; };
+
+// ---------- Rolling counter ----------
+function odo(value, size, o = {}) {
+  const dec = (String(value).split('.')[1] || '').length, k = Math.pow(10, dec);
+  const fin = Math.round(value * k), s = String(fin).padStart(dec + 1, '0'), il = s.length - dec;
+  const cw = size * (o.cw || .5), lh = size, cols = [];
+  let x = 0, out = '';
+  for (let i = 0; i < s.length; i++) {
+    if (dec && i === il) { out += `<text class="num" x="${x + size * .1}" y="0" font-size="${size}" text-anchor="middle">.</text>`; x += size * .2; }
+    else if (i > 0 && i < il && (il - i) % 3 === 0 && il >= 5) { out += `<text class="num" x="${x + size * .09}" y="0" font-size="${size}" text-anchor="middle">,</text>`; x += size * .18; }
+    const id = 'o' + (uid++);
+    let col = '';
+    for (let n = 0; n <= 10; n++) col += `<text class="num" x="${x + cw / 2}" y="${n * lh}" font-size="${size}" text-anchor="middle">${n % 10}</text>`;
+    out += `<clipPath id="c${id}"><rect x="${x - 1}" y="${-size * .8}" width="${cw + 2}" height="${size * .92}"/></clipPath><g clip-path="url(#c${id})"><g id="${id}">${col}</g></g>`;
+    cols.push({ id, place: s.length - 1 - i, x });
+    x += cw;
+  }
+  return {
+    svg: out, w: x, cols, cw,
+    set(v) {
+      let n = Math.min(fin, v * k); if (v >= value) n = fin;
+      for (const c of cols) {
+        if (!c.el) c.el = document.getElementById(c.id); if (!c.el) continue;
+        const pw = Math.pow(10, c.place), f = n / pw, d = Math.floor(f + 1e-9), r = f - d;
+        const roll = c.place === 0 ? Math.max(0, r) : Math.max(0, r * pw - (pw - 1));
+        c.el.setAttribute('transform', `translate(0,${f1(-((d % 10) + roll) * lh)})`);
+        c.el.setAttribute('opacity', d === 0 && c.place > dec ? .14 : 1);
+      }
+    }
+  };
+}
+let CW = 1200;
+function hero(m, size, x, y, anchor = 'start', fill = INK, maxW) {
+  const av = maxW || (x === 0 ? 1e4 : anchor === 'start' ? CW - x - 12 : anchor === 'end' ? x - 12 : 2 * Math.min(x, CW - x) - 24);
+  let o = odo(m.value, size), us = size * .34, uw = m.unit.length * us, tot = o.w + size * .08 + uw;
+  if (tot > av) { size = Math.floor(size * av / tot); o = odo(m.value, size); us = size * .34; uw = m.unit.length * us; tot = o.w + size * .08 + uw; }
+  const x0 = anchor === 'middle' ? x - tot / 2 : anchor === 'end' ? x - tot : x;
+  return { svg: `<g transform="translate(${f1(x0)},${y})" fill="${fill}">${o.svg}<text class="zh" x="${f1(o.w + size * .08)}" y="0" font-size="${f1(us)}">${m.unit}</text></g>`, set: f => o.set(m.value * f), w: tot };
+}
+const partial = (pts, f) => { const n = (pts.length - 1) * clamp(f), i = Math.floor(n), r = n - i; let d = ''; for (let j = 0; j <= i; j++) d += (j ? 'L' : 'M') + f1(pts[j][0]) + ' ' + f1(pts[j][1]); if (r > 0 && i < pts.length - 1) d += 'L' + f1(pts[i][0] + (pts[i + 1][0] - pts[i][0]) * r) + ' ' + f1(pts[i][1] + (pts[i + 1][1] - pts[i][1]) * r); return d || 'M0 0'; };
+const TAPE = 'const tokens = await burn(year); if (cache.hit) skip(); else think(); write(code); read(repo); ';
+function tape(id, w = 13, back) {
+  return back ? `<path id="${id}" fill="none" stroke="${T3}" stroke-width="${w}px" stroke-linecap="butt"/>`
+    : `<path id="${id}b" fill="none" stroke="${INK}" stroke-width="${w + 3}px" stroke-linecap="butt"/><path id="${id}" fill="none" stroke="${T0}" stroke-width="${w}px" stroke-linecap="butt"/><text class="mono" font-size="${w > 12 ? 10 : 8}" fill="${EM}" dy="3.5"><textPath href="#${id}">${esc(TAPE.repeat(8))}</textPath></text>`;
+}
+const setTape = (id, d) => { const a = document.getElementById(id), b = document.getElementById(id + 'b'); if (a) a.setAttribute('d', d); if (b) b.setAttribute('d', d); };
+
+// year / day slabs shared by the typing scene and the scale
+function slabs(m, id) {
+  const v = m.value, n = Math.min(Math.ceil(v), 36), th = Math.max(5, Math.min(20, 190 / n)), last = v <= 36 ? (v - Math.floor(v) || 1) : 1;
+  let g = '', z = 0;
+  for (let i = 0; i < n; i++) {
+    const h = th * (i === n - 1 ? Math.max(last, .3) : 1) - 1.5, top = i === n - 1;
+    g += `<g id="${id}${i}">${box(0, 0, z, 150, 110, h, { t: top ? EM : T0, l: T1, r: T2, s: th < 9 ? T3 : INK })}${th >= 14 && !top ? `<g transform="${mLeft(110, 0, z + h)}"><text class="mono" x="10" y="${f1(h - 4)}" font-size="10" fill="${T3}">${String(i + 1).padStart(2, '0')}</text><rect x="118" y="${f1(h / 2 - 2)}" width="22" height="4" fill="${INK}"/></g>` : ''}</g>`;
+    z += th;
+  }
+  return { svg: g, n, h: z, set(f) { for (let i = 0; i < n; i++) { const e = document.getElementById(id + i), q = ease(seg(f * n, i, i + 1)); if (e) { e.setAttribute('transform', `translate(0,${f1(-(1 - q) * 70)})`); e.setAttribute('opacity', q < .02 ? 0 : 1); } } } };
+}
+
+// ---------- 1 GPU ----------
+function gpuCard() {
+  const W = 520, D = 210, Z = 54;
+  let g = ground(46, 46, W, D + 6);
+  g += box(-4, 6, Z, W - 4, D - 12, 5, { t: DK1, l: DK2, r: DK3 });
+  g += box(64, D - 14, Z - 17, 236, 3, 17, { t: EM, l: EM, r: EMD });
+  g += box(318, D - 14, Z - 17, 44, 3, 17, { t: EM, l: EM, r: EMD });
+  g += `<g stroke="${EMD}" transform="${mLeft(D - 11, 64, Z)}">${Array.from({ length: 23 }, (_, i) => `<line x1="${6 + i * 10}" y1="3" x2="${6 + i * 10}" y2="17"/>`).join('')}</g>`;
+  g += box(0, 0, Z + 5, W, D, 42, { t: DK1, l: DK2, r: DK3, s: '#000' });
+  const zt = Z + 47;
+  const blade = Array.from({ length: 9 }, (_, i) => `<path transform="rotate(${i * 40})" d="M4,-20 C30,-34 56,-44 44,-68 C24,-72 2,-52 -6,-22Z"/>`).join('');
+  const fan = (cx) => `<g transform="translate(${cx},105)"><circle r="84" fill="${DK3}" stroke="${T3}"/><circle r="76" fill="#0c0b0a" stroke="none"/><g class="fan" fill="${DK1}" stroke="${T3}">${blade}</g><circle r="22" fill="${DK2}" stroke="${T3}"/><circle r="7" fill="${EM}" stroke="none"/></g>`;
+  g += `<g transform="${mTop(zt)}" fill="none" stroke="${T3}"><rect x="10" y="10" width="${W - 20}" height="${D - 20}" rx="12"/>${Array.from({ length: 9 }, (_, i) => `<line x1="${228 + i * 8}" y1="26" x2="${228 + i * 8}" y2="184"/>`).join('')}${fan(120)}${fan(400)}<circle cx="26" cy="26" r="4"/><circle cx="${W - 26}" cy="26" r="4"/><circle cx="26" cy="${D - 26}" r="4"/><circle cx="${W - 26}" cy="${D - 26}" r="4"/></g>`;
+  g += `<g transform="${mLeft(D, 0, zt)}"><rect x="18" y="13" width="${W - 150}" height="5" fill="${EM}"/><text class="num" x="${W - 22}" y="33" font-size="30" text-anchor="end" fill="${T1}" letter-spacing="2">H100</text></g>`;
+  g += box(W, -10, Z - 26, 5, D + 20, 84, { t: T1, l: T2, r: T2 });
+  g += `<g transform="${mRight(W + 5, D + 10, Z + 58)}" fill="${INK}" stroke="none">${Array.from({ length: 6 }, (_, r) => Array.from({ length: 13 }, (_, c) => `<rect x="${24 + c * 15}" y="${10 + r * 9}" width="9" height="4" rx="2"/>`).join('')).join('')}</g>`;
+  return g;
+}
+function sGpu(m, L) {
+  const g = gpuCard();
+  // flip counter block
+  const sz = 132, o = odo(m.value, sz, { cw: .56 }), us = 56, uw = m.unit.length * us, bw = o.w + uw + 62, bh = 176, bd = 64;
+  let c = ground(18, 0, bw, bd) + box(0, 0, 0, bw, bd, bh, { t: T0, l: T1, r: T2 });
+  let tiles = '';
+  for (const k of o.cols) tiles += `<rect x="${f1(k.x + 3)}" y="${-sz * .8 - 4}" width="${f1(o.cw - 6)}" height="${sz * .92 + 8}" rx="7" fill="${DK2}" stroke="${INK}"/>`;
+  c += `<g transform="${mLeft(bd, 0, bh)}"><g transform="translate(22,${bh - 34})">${tiles}<g fill="${T0}">${o.svg}</g><line x1="0" x2="${f1(o.w)}" y1="${-sz * .37}" y2="${-sz * .37}" stroke="${T1}" stroke-width="2.4px"/><text class="zh" x="${f1(o.w + 12)}" y="-8" font-size="${us}" fill="${INK}">${m.unit}</text></g><circle cx="12" cy="12" r="3" fill="${INK}"/><circle cx="${bw - 12}" cy="12" r="3" fill="${INK}"/></g>`;
+  const svg = `<g ${at([[300, 205, 1], [100, 76, .5]], L)}>${g}</g><g ${at([[790, 330, .98], [L ? 0 : Math.max(52, 195 - bw * .33), 356, .78]], L)}>${c}</g>`;
+  let fans, ang = 0;
+  return { svg, update(p, dt, root) {
+    o.set(m.value * ease(p / .85));
+    if (!fans) fans = root.querySelectorAll('.fan');
+    if (!reduce) ang = (ang + dt * (.12 + .7 * seg(p, 0, .85) * (p < .995 ? 1 : .35))) % 360;
+    fans.forEach((f, i) => f.setAttribute('transform', `rotate(${f1(i ? -ang : ang)})`));
+  } };
+}
+
+// ---------- 2 Cache ----------
+function sCache(m, L, M) {
+  const tot = M['gpu-days'].raw.hours, keepF = 1 - m.raw.hours / tot, dv = M['gpu-days'];
+  let n = dv.value >= 24 ? Math.round(dv.value) : 96; n = Math.min(n, L ? 220 : 90); n = Math.max(1, Math.round(n / (L ? 22 : 9))) * (L ? 22 : 9);
+  const cols = L ? 22 : 9, rows = Math.ceil(n / cols), keep = Math.max(1, Math.round(n * keepF)), px = 36, py = 46, id = 'k' + (uid++);
+  let ghosts = '', pages = ''; const meta = [];
+  const cx = cols * px / 2, cy = rows * py / 2;
+  for (let i = 0; i < n; i++) {
+    const c = i % cols, r = Math.floor(i / cols), x = c * px, y = r * py, kept = i >= n - keep;
+    const dist = Math.hypot((x - cx) / (cols * px), (y - cy) / (rows * py));
+    ghosts += `<rect x="${x}" y="${y}" width="30" height="40" fill="none" stroke="${T2}" stroke-dasharray="3 3"/>`;
+    const o = P(x, y);
+    pages += `<g id="${id}${i}"><g transform="${mTop(0, x, y)}"><rect width="30" height="40" fill="${T0}" stroke="${INK}"/><rect width="30" height="10" fill="${kept ? EM : INK}" stroke="${INK}"/><line x1="6" y1="20" x2="24" y2="20" stroke="${T2}"/><line x1="6" y1="28" x2="18" y2="28" stroke="${T2}"/></g></g>`;
+    meta.push({ kept, start: .04 + .5 * dist * 1.6 + rnd(i) * .1, dx: (rnd(i + 9) - .3) * 260, dy: 260 + rnd(i + 3) * 240, rot: (rnd(i + 5) - .5) * 80, ox: o[0], oy: o[1] });
+  }
+  const gw = (cols * px + rows * py) * S, gh = (cols * px + rows * py) * .5;
+  const k = L ? Math.min(1, 1040 / gw, 520 / gh) : Math.min(.62, 366 / gw, 400 / gh);
+  const ox = (L ? 600 : 195) - (cols * px - rows * py) * S * k / 2, oy = (L ? 360 : 400) - gh * k / 2;
+  const h = hero(m, L ? 220 : 124, L ? 690 : 195, L ? 330 : 122, 'middle', INK);
+  const svg = `<g transform="translate(${f1(ox)},${f1(oy)}) scale(${f1(k * 100) / 100})"><g transform="${mTop()}">${ghosts}</g>${pages}</g><g id="${id}h">${h.svg}</g>`;
+  let els;
+  return { svg, update(p) {
+    if (!els) els = meta.map((_, i) => document.getElementById(id + i));
+    for (let i = 0; i < n; i++) { const q = meta[i]; if (q.kept) continue; const t = seg(p, q.start, q.start + .22), e = t * t; els[i].setAttribute('transform', `translate(${f1(q.dx * e)},${f1(-q.dy * e)}) rotate(${f1(q.rot * t)} ${f1(q.ox)} ${f1(q.oy)})`); els[i].setAttribute('opacity', t >= 1 ? 0 : 1 - e * e); }
+    h.set(ease(seg(p, .1, .9)));
+    document.getElementById(id + 'h').setAttribute('opacity', L ? f1(seg(p, .12, .32)) : 1);
+  } };
+}
+
+// ---------- 3 Rack ----------
+function sRack(m, L) {
+  const days = m.raw.hours / 24, W = 336, D = 150, uh = 33, H = 12 * uh + 34, id = 'r' + (uid++);
+  const ml = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  let g = ground(26, 0, W, D) + box(0, 0, 0, W, D, H, { t: DK1, l: DK2, r: DK3, s: '#000' });
+  let f = '', n = 0;
+  for (let u = 0; u < 12; u++) {
+    const y = 18 + u * uh;
+    f += `<rect x="10" y="${y}" width="${W - 20}" height="${uh - 5}" rx="3" fill="${DK1}" stroke="${T3}"/><text class="mono" x="18" y="${y + 18}" font-size="10" fill="${T3}">${String(u + 1).padStart(2, '0')}</text>`;
+    for (let d = 0; d < ml[u]; d++, n++) f += `<circle id="${id}${n}" cx="${44 + d * 9}" cy="${y + 14}" r="3" fill="${DK3}" stroke="${T3}" stroke-width=".8px"/>`;
+  }
+  g += `<g transform="${mLeft(D, 0, H)}">${f}</g>`;
+  g += `<g transform="${mRight(W, D, H)}" stroke="${T3}">${Array.from({ length: 22 }, (_, i) => `<line x1="22" x2="${D - 22}" y1="${30 + i * 18}" y2="${30 + i * 18}"/>`).join('')}</g>`;
+  g += `<g transform="${mTop(H)}" fill="none" stroke="${T3}"><rect x="16" y="16" width="${W - 32}" height="${D - 32}" rx="8"/></g>`;
+  const lit = Math.min(365, days), h = hero(m, L ? 250 : 120, L ? 620 : 195, L ? 380 : 118, L ? 'start' : 'middle', EM);
+  const svg = `<g ${at([[300, 428, .85], [117, 520, .78]], L)}>${g}</g>${h.svg}`;
+  let els, prev = -1;
+  return { svg, update(p) {
+    if (!els) els = Array.from({ length: 365 }, (_, i) => document.getElementById(id + i));
+    const e = ease(p / .85), cur = lit * e; h.set(e);
+    if (Math.abs(cur - prev) < .01 && prev >= 0) return; prev = cur;
+    for (let i = 0; i < 365; i++) { const a = clamp(cur - i); if (a > 0) { els[i].setAttribute('fill', EM); els[i].setAttribute('stroke', EM); els[i].setAttribute('r', f1(Math.max(1.3, 3.4 * Math.sqrt(a)))); } else { els[i].setAttribute('fill', DK3); els[i].setAttribute('stroke', T3); els[i].setAttribute('r', 3); } }
+  } };
+}
+
+// ---------- 4 Keyboard ----------
+function keyboard(id) {
+  const U = 36, rows = [[...Array(13).fill(1), 2], [1.5, ...Array(12).fill(1), 1.5], [1.75, ...Array(11).fill(1), 2.25], [2.25, ...Array(10).fill(1), 2.75], [1.25, 1.25, 1.25, 6.25, 1.25, 1.25, 1.25, 1.25]];
+  let g = ground(24, 0, 560, 200) + box(0, 0, 0, 560, 200, 24, { t: DK1, l: DK2, r: DK3, s: '#000' }), nk = 0;
+  rows.forEach((r, ri) => { let x = 10; r.forEach((w, ki) => {
+    const em = ri === 2 && ki === r.length - 1, c = { t: em ? EM : T0, l: em ? EMD : T1, r: em ? EMD : T2 }, a = [x + 2, 10 + ri * U + 2, 24, w * U - 4, U - 4];
+    g += `<g id="${id}${nk}">${box(...a, 15, c)}</g><g id="${id}${nk}d" display="none">${box(...a, 5, { ...c, t: em ? EMD : T1 })}</g>`; nk++; x += w * U; }); });
+  return { svg: g, nk };
+}
+function sType(m, L) {
+  const id = 'y' + (uid++), kb = keyboard(id), g = kb.svg, nk = kb.nk;
+  const st = slabs(m, id + 's'), h = hero(m, L ? 210 : 118, L ? 742 : 195, L ? 215 : 112, L ? 'start' : 'middle', INK);
+  const svg = `<g ${at([[215, 250, 1], [112, 400, .5]], L)}>${g}</g><g ${at([[930, 498, 1], [262, 330, .62]], L)}>${ground(18, 0, 150, 110)}${st.svg}</g>${h.svg}`;
+  let els, down = [];
+  return { svg, update(p) {
+    if (!els) els = Array.from({ length: nk }, (_, i) => [document.getElementById(id + i), document.getElementById(id + i + 'd')]);
+    const e = ease(p / .85); h.set(e); st.set(e);
+    const step = Math.floor(p * 150), now = p > .995 || p < .004 ? [] : [Math.floor(rnd(step) * nk), Math.floor(rnd(step + 77) * nk), Math.floor(rnd(step + 31) * nk)];
+    for (const i of down) if (!now.includes(i)) { els[i][0].removeAttribute('display'); els[i][1].setAttribute('display', 'none'); }
+    for (const i of now) { els[i][0].setAttribute('display', 'none'); els[i][1].removeAttribute('display'); }
+    down = now;
+  } };
+}
+
+// ---------- 5 Code ----------
+function sCode(m, L) {
+  const linux = m.raw.linux >= .01, units = linux ? m.raw.linux : m.raw.lines / 15000, id = 'c' + (uid++);
+  const nt = units > 4 ? 1 : Math.max(1, Math.ceil(units - 1e-9)), W = 200, H = 300, gap = 250;
+  const fills = Array.from({ length: nt }, (_, i) => units > 4 ? 1 : clamp(units - i));
+  let g = '';
+  for (let t = nt - 1; t >= 0; t--) {
+    const x0 = t * gap, y0 = -t * gap * 0; // tanks step along x
+    let rowsL = '', rowsR = '';
+    for (let r = 0; r < 36; r++) { const y = H - 6 - r * 8; let x = 8; while (x < W - 20) { const w = 8 + rnd(r * 13 + x + t) * 46; if (rnd(r * 7 + x) > .22) rowsL += `<line class="${id}r${t}" data-r="${r}" x1="${f1(x)}" x2="${f1(Math.min(W - 8, x + w))}" y1="${y}" y2="${y}"/>`; x += w + 7; } x = 8; while (x < W - 20) { const w = 8 + rnd(r * 17 + x + 5 + t) * 46; if (rnd(r * 3 + x) > .22) rowsR += `<line class="${id}r${t}" data-r="${r}" x1="${f1(x)}" x2="${f1(Math.min(W - 8, x + w))}" y1="${y}" y2="${y}"/>`; x += w + 7; } }
+    g += `<g transform="translate(${f1(P(x0, 0)[0])},${f1(P(x0, 0)[1])})">${ground(20, 0, W, W)}
+      <polyline fill="none" stroke="${T3}" points="${pp([0, W, 0], [0, 0, 0], [W, 0, 0])}"/><line stroke="${T3}" x1="0" y1="0" x2="0" y2="${-H}"/>
+      <polygon id="${id}t${t}" fill="${EM}" stroke="${INK}" points=""/>
+      <g transform="${mLeft(W, 0, H)}"><rect id="${id}l${t}" x="0" width="${W}" fill="${EM}" stroke="${INK}"/><g stroke="${T0}" stroke-width="1.5px">${rowsL}</g></g>
+      <g transform="${mRight(W, W, H)}"><rect id="${id}q${t}" x="0" width="${W}" fill="${EMD}" stroke="${INK}"/><g stroke="${T0}" stroke-width="1.5px" opacity=".8">${rowsR}</g></g>
+      <g fill="none" stroke="${INK}"><polygon points="${pp([0, 0, H], [W, 0, H], [W, W, H], [0, W, H])}"/><polyline points="${pp([0, W, H], [0, W, 0], [W, W, 0], [W, 0, 0], [W, 0, H])}"/><line x1="${P(W, W)[0]}" y1="${P(W, W)[1]}" x2="${P(W, W, H)[0]}" y2="${P(W, W, H)[1]}"/></g>
+      <g transform="${mLeft(W, 0, H)}" stroke="${INK}">${[.25, .5, .75].map(q => `<line x1="0" x2="12" y1="${H * (1 - q)}" y2="${H * (1 - q)}"/>`).join('')}</g></g>`;
+  }
+  // falling lines
+  let fall = ''; const NF = 34, fm = [];
+  for (let i = 0; i < NF; i++) { const t = i % nt, x = 20 + rnd(i) * (W - 90), y = 20 + rnd(i + 40) * (W - 40), w = 20 + rnd(i + 80) * 50; fm.push({ t, x, y, w, ph: rnd(i + 120) }); fall += `<line id="${id}f${i}" stroke="${i % 5 === 0 ? EM : INK}" stroke-width="2.2px"/>`; }
+  const tw = (nt - 1) * gap, k = L ? (nt > 2 ? .72 : nt > 1 ? .86 : 1) : (nt > 2 ? .3 : nt > 1 ? .42 : .6);
+  const h = hero(m, L ? 200 : 110, L ? 80 : 195, L ? 300 : 108, L ? 'start' : 'middle', INK, L ? (nt > 1 ? 470 : 560) : 0);
+  const lx = L ? 84 : 195, ly = L ? 352 : 136;
+  const svg = `${h.svg}
+    <g transform="translate(${f1((L ? 860 : 195) - tw * S * k / 2)},${f1((L ? 440 : 470) - tw * .25 * k)}) scale(${k})">${g}<g>${fall}</g></g>`;
+  let els;
+  return { svg, update(p) {
+    if (!els) els = { f: fm.map((_, i) => document.getElementById(id + 'f' + i)), t: fills.map((_, t) => ({ top: document.getElementById(id + 't' + t), l: document.getElementById(id + 'l' + t), q: document.getElementById(id + 'q' + t), rows: [...document.querySelectorAll('.' + id + 'r' + t)] })) };
+    const e = ease(p / .85); h.set(e);
+    const lv = fills.map((f, t) => { const a = clamp(e * (units > 4 ? 1 : units) - t) ; return Math.min(f, a) * H; });
+    lv.forEach((fh, t) => { const o = els.t[t]; o.top.setAttribute('points', pp([0, 0, fh], [W, 0, fh], [W, W, fh], [0, W, fh])); for (const r of [o.l, o.q]) { r.setAttribute('y', f1(H - fh)); r.setAttribute('height', f1(fh)); } o.top.setAttribute('opacity', fh < 1 ? 0 : 1); const nr = Math.floor((fh - 2) / 8); for (const r of o.rows) r.setAttribute('display', +r.dataset.r < nr ? 'inline' : 'none'); });
+    fm.forEach((q, i) => { const el = els.f[i], run = p > .01 && p < .84 && lv[q.t] < fills[q.t] * H - .5 || (p > .01 && p < .84 && q.t === 0 && nt === 1); if (!run) { el.setAttribute('display', 'none'); return; } el.removeAttribute('display'); const u = (p * 7 + q.ph) % 1, z = 620 - u * u * (620 - lv[q.t]), a = P(q.t * gap + q.x, q.y, z), b = P(q.t * gap + q.x + q.w, q.y, z); el.setAttribute('x1', f1(a[0])); el.setAttribute('y1', f1(a[1])); el.setAttribute('x2', f1(b[0])); el.setAttribute('y2', f1(b[1])); });
+  } };
+}
+
+// ---------- 6 Laps (always Taiwan) ----------
+const TW = [[121.537, 25.298], [121.64, 25.23], [121.69, 25.21], [121.75, 25.16], [121.92, 25.13], [122.00, 25.01], [121.83, 24.86], [121.87, 24.59], [121.80, 24.45], [121.77, 24.31], [121.63, 23.98], [121.52, 23.60], [121.45, 23.32], [121.38, 23.10], [121.18, 22.76], [121.01, 22.61], [120.90, 22.34], [120.89, 22.20], [120.86, 21.90], [120.74, 21.92], [120.71, 22.07], [120.65, 22.26], [120.59, 22.37], [120.45, 22.46], [120.27, 22.62], [120.18, 22.88], [120.14, 23.00], [120.06, 23.12], [120.12, 23.27], [120.15, 23.38], [120.14, 23.46], [120.18, 23.70], [120.24, 23.80], [120.32, 23.97], [120.42, 24.07], [120.50, 24.27], [120.58, 24.40], [120.67, 24.50], [120.76, 24.62], [120.91, 24.82], [120.97, 24.92], [121.07, 25.04], [121.28, 25.12], [121.40, 25.17], [121.50, 25.28]];
+function smoothClosed(pts, per = 6) { const n = pts.length, out = []; for (let i = 0; i < n; i++) { const a = pts[(i - 1 + n) % n], b = pts[i], c = pts[(i + 1) % n], d = pts[(i + 2) % n]; for (let j = 0; j < per; j++) { const t = j / per, t2 = t * t, t3 = t2 * t; out.push([0, 1].map(k => .5 * ((2 * b[k]) + (-a[k] + c[k]) * t + (2 * a[k] - 5 * b[k] + 4 * c[k] - d[k]) * t2 + (-a[k] + 3 * b[k] - 3 * c[k] + d[k]) * t3))); } } return out; }
+const TWB = (() => { const k0 = Math.cos(23.6 * Math.PI / 180), sc = 118, base = smoothClosed(TW.map(q => [(q[0] - 121.03) * k0 * sc, -(q[1] - 23.6) * sc])), n = base.length;
+  let area = 0; for (let i = 0; i < n; i++) { const a = base[i], b = base[(i + 1) % n]; area += a[0] * b[1] - b[0] * a[1]; }
+  const sg = area > 0 ? 1 : -1, raw = base.map((_, i) => { const a = base[(i - 2 + n) % n], b = base[(i + 2) % n], tx = b[0] - a[0], ty = b[1] - a[1], l = Math.hypot(tx, ty) || 1; return [sg * ty / l, -sg * tx / l]; });
+  const nor = raw.map((_, i) => { let x = 0, y = 0; for (let j = -5; j <= 5; j++) { const q = raw[(i + j + n) % n]; x += q[0]; y += q[1]; } const l = Math.hypot(x, y) || 1; return [x / l, y / l]; });
+  return { base, nor, n, sc, k0 }; })();
+// Taiwan with a text tape wound round the coast. loops = true lap count (drawn loops are capped).
+function taiwan(id, loops, o = {}) {
+  const { base, nor, n, sc, k0 } = TWB, maxL = o.maxL || 6, drawn = Math.max(.035, Math.min(loops, maxL)), gap = o.gap || 13, w = o.w || 11, all = [];
+  for (let i = 0; i <= Math.round(drawn * n); i++) { const j = i % n, d = 12 + gap * (i / n); all.push([base[j][0] + nor[j][0] * d, base[j][1] + nor[j][1] * d]); }
+  const d0 = partial(base.concat([base[0]]), 1) + 'Z', ll = (lo, la) => [(lo - 121.03) * k0 * sc, -(la - 23.6) * sc];
+  const ridge = [[121.45, 24.6], [121.3, 24.3], [121.2, 24.0], [121.05, 23.6], [120.95, 23.25], [120.85, 22.9], [120.78, 22.6]].map(q => ll(q[0], q[1]));
+  const tp = ll(121.52, 25.04);
+  const svg = `<path d="${d0}" fill="${T2}" stroke="none" transform="translate(16,22)"/><path d="${d0}" fill="${T2}" stroke="${INK}" transform="translate(0,10)"/><path d="${d0}" fill="${T1}" stroke="${INK}"/>
+    <g fill="none" stroke="${T3}">${ridge.map(r => `<path d="M${f1(r[0] - 9)} ${f1(r[1] + 6)}L${f1(r[0])} ${f1(r[1] - 7)}L${f1(r[0] + 9)} ${f1(r[1] + 6)}"/>`).join('')}</g>
+    <line x1="${f1(tp[0])}" y1="${f1(tp[1])}" x2="${f1(tp[0])}" y2="${f1(tp[1] - 20)}" stroke="${INK}"/><circle cx="${f1(tp[0])}" cy="${f1(tp[1] - 24)}" r="5.5" fill="${EM}" stroke="${INK}"/>
+    <path id="${id}b" fill="none" stroke="${INK}" stroke-width="${w + 3}px" stroke-linecap="butt"/><path id="${id}" fill="none" stroke="${T0}" stroke-width="${w}px" stroke-linecap="butt"/><text class="mono" font-size="${f1(w * .7)}" fill="${EM}" dy="${f1(w * .25)}"><textPath href="#${id}">${esc(TAPE.repeat(Math.ceil(drawn * 14)))}</textPath></text><circle id="${id}tip" r="6" fill="${EM}" stroke="${INK}"/>`;
+  return { svg, set(e, tipOn = true) { setTape(id, partial(all, e)); const i = Math.min(all.length - 1, Math.round(clamp(e) * (all.length - 1))), tip = document.getElementById(id + 'tip'); if (tip) { tip.setAttribute('cx', f1(all[i][0])); tip.setAttribute('cy', f1(all[i][1])); tip.setAttribute('opacity', tipOn ? 1 : 0); } } };
+}
+function sLaps(m, L) {
+  const id = 'l' + (uid++), tw = taiwan(id, m.raw.taiwanLaps);
+  const h = hero(m, L ? 240 : 124, L ? 640 : 195, L ? 400 : 122, L ? 'start' : 'middle', INK);
+  const svg = `<g ${at([[360, 322, 1.1], [190, 400, .78]], L)}>${tw.svg}</g>${h.svg}`;
+  return { svg, update(p) { const e = io(p / .88); h.set(ease(p / .88)); tw.set(e, p < .995); } };
+}
+
+// ---------- 7 Rereads ----------
+function sRead(m, L) {
+  const W = 230, D = 300, id = 'b' + (uid++), NP = 6;
+  let pg = ''; for (let i = 0; i < NP; i++) pg += `<path id="${id}p${i}" fill="${T0}" stroke="${INK}"/>`;
+  const lines = (x0) => Array.from({ length: 11 }, (_, i) => `<line x1="${x0 + 22}" x2="${x0 + W - 24 - (i % 4 === 3 ? 70 : rnd(i + x0) * 30)}" y1="${34 + i * 22}" y2="${34 + i * 22}"/>`).join('');
+  const svg = `<g ${at([[440, 392, .85], [200, 330, .52]], L)}>${ground(-W + 8, 14, 2 * W + 28, D)}${box(-W - 10, -8, 0, 2 * W + 20, D + 16, 8, { t: DK1, l: DK2, r: DK3 })}
+    <g id="${id}L"></g><g id="${id}R"></g>
+    <g id="${id}tl" fill="none" stroke="${T2}">${lines(-W)}</g><g id="${id}tr" fill="none" stroke="${T2}">${lines(0)}</g>
+    <polygon id="${id}ear" fill="${T1}" stroke="${INK}"/><g id="${id}wear" stroke="${INK}" fill="none"></g>${pg}
+    <polygon id="${id}rib" fill="${EM}" stroke="${INK}"/></g>`;
+  const h = hero(m, L ? 185 : 112, L ? 1170 : 195, L ? 230 : 118, L ? 'end' : 'middle', INK);
+  return { svg: svg + h.svg, update(p) {
+    const e = ease(p / .85), q = L ? 1 : 1, hL = 12 + 34 * e, hR = 46 - 34 * e; h.set(e);
+    document.getElementById(id + 'L').innerHTML = box(-W, 0, 8, W, D, hL, { t: T0, l: T1, r: T2 }) + `<g transform="${mLeft(D, -W, 8 + hL)}" stroke="${T3}" stroke-width=".8px">${Array.from({ length: Math.floor(hL / 4) }, (_, i) => `<line x1="2" x2="${W - 2}" y1="${i * 4 + 3}" y2="${i * 4 + 3}"/>`).join('')}</g>`;
+    document.getElementById(id + 'R').innerHTML = box(0, 0, 8, W, D, hR, { t: T0, l: T1, r: T2 }) + `<g transform="${mLeft(D, 0, 8 + hR)}" stroke="${T3}" stroke-width=".8px">${Array.from({ length: Math.floor(hR / 4) }, (_, i) => `<line x1="2" x2="${W - 2}" y1="${i * 4 + 3}" y2="${i * 4 + 3}"/>`).join('')}</g><g transform="${mRight(W, D, 8 + hR)}" stroke="${T3}" stroke-width=".8px">${Array.from({ length: Math.floor(hR / 4) }, (_, i) => `<line x1="2" x2="${D - 2}" y1="${i * 4 + 3}" y2="${i * 4 + 3}"/>`).join('')}</g>`;
+    document.getElementById(id + 'tl').setAttribute('transform', mTop(8 + hL));
+    document.getElementById(id + 'tr').setAttribute('transform', mTop(8 + hR));
+    // worn corner on the right block
+    const c = 16 + 40 * e;
+    document.getElementById(id + 'ear').setAttribute('points', pp([W - c, D, 8 + hR], [W, D - c, 8 + hR], [W - c * .7, D - c * .7, 8 + hR + c * .28]));
+    document.getElementById(id + 'rib').setAttribute('points', pp([-60, D, 8 + hL], [-36, D, 8 + hL], [-36, D + 2, -44], [-48, D + 2, -32], [-60, D + 2, -44]));
+    const th = []; for (let i = 0; i < NP; i++) { const u = (p * 9 + i / NP) % 1, on = p > .004 && p < .9; th.push(on ? Math.PI * io(u) : (i < NP / 2 ? 0 : Math.PI)); }
+    th.sort((a, b) => Math.abs(b - Math.PI / 2) - Math.abs(a - Math.PI / 2));
+    th.forEach((t, i) => { const el = document.getElementById(id + 'p' + i); if (t <= 0.001 || t >= Math.PI - .001) { el.setAttribute('display', 'none'); return; } el.removeAttribute('display');
+      const z0 = 8 + (t < Math.PI / 2 ? hR : hL) , zz = 8 + hR + (hL - hR) * (t / Math.PI), r = W, bend = .5 * Math.sin(t), tm = t + (t < Math.PI / 2 ? bend : -bend) * .9, ex = r * Math.cos(t), ez = zz + r * Math.sin(t) * .92, mx = r * .5 * Math.cos(tm), mz = zz + r * .5 * Math.sin(tm) * .92;
+      const A = P(0, 0, zz), B = P(0, D, zz), Cc = P(ex, D, ez), Dd = P(ex, 0, ez), m1 = P(mx, 0, mz), m2 = P(mx, D, mz);
+      const cq = (a, mid, b) => [2 * mid[0] - (a[0] + b[0]) / 2, 2 * mid[1] - (a[1] + b[1]) / 2];
+      const c1 = cq(A, m1, Dd), c2 = cq(B, m2, Cc);
+      el.setAttribute('d', `M${f1(A[0])} ${f1(A[1])}Q${f1(c1[0])} ${f1(c1[1])} ${f1(Dd[0])} ${f1(Dd[1])}L${f1(Cc[0])} ${f1(Cc[1])}Q${f1(c2[0])} ${f1(c2[1])} ${f1(B[0])} ${f1(B[1])}Z`);
+      el.setAttribute('fill', t > Math.PI / 2 ? T1 : T0); });
+  } };
+}
+
+// ---------- 8 Energy ----------
+function sEnergy(m, L) {
+  const id = 'e' + (uid++), PW = 150, PH = 290, PD = 16, RL = L ? 540 : 520, km = Math.round(m.raw.evKm).toLocaleString('en-US');
+  let ph = ground(14, 0, PW, PD) + box(0, 0, 0, PW, PD, PH, { t: DK1, l: DK2, r: DK3, s: '#000' });
+  ph += `<g transform="${mLeft(PD, 0, PH)}"><rect x="8" y="8" width="${PW - 16}" height="${PH - 16}" rx="12" fill="${T0}" stroke="${INK}"/><rect x="55" y="16" width="40" height="9" rx="4.5" fill="${INK}"/>
+    <rect x="34" y="62" width="82" height="176" rx="12" fill="${T0}" stroke="${INK}" stroke-width="2.4px"/><rect x="60" y="50" width="30" height="12" rx="4" fill="${INK}"/>
+    <clipPath id="${id}cp"><rect x="41" y="69" width="68" height="162" rx="7"/></clipPath><g clip-path="url(#${id}cp)"><rect id="${id}lv" x="41" width="68" y="231" height="0" fill="${EM}"/></g>
+    <path d="M80,116 L62,156 H78 L72,188 L96,144 H80 Z" fill="${T0}" stroke="${INK}"/></g>`;
+  // tally marks on the ground
+  const NT = 30; let tl = '';
+  for (let i = 0; i < NT; i++) { const g5 = Math.floor(i / 5), j = i % 5, gx = (g5 % 3) * 86, gy = Math.floor(g5 / 3) * 70; tl += j < 4 ? `<line id="${id}m${i}" x1="${gx + j * 14}" y1="${gy}" x2="${gx + j * 14}" y2="${gy + 46}"/>` : `<line id="${id}m${i}" x1="${gx - 10}" y1="${gy + 38}" x2="${gx + 52}" y2="${gy + 8}"/>`; }
+  const car = box(0, 0, 10, 132, 58, 24, { t: EM, l: EM, r: EMD }) + box(30, 4, 34, 70, 50, 22, { t: T0, l: T1, r: T2 }) +
+    `<g transform="${mLeft(58, 0, 34)}"><circle cx="28" cy="26" r="13" fill="${DK2}" stroke="${INK}"/><circle cx="28" cy="26" r="5" fill="${T2}" stroke="none"/><circle cx="104" cy="26" r="13" fill="${DK2}" stroke="${INK}"/><circle cx="104" cy="26" r="5" fill="${T2}" stroke="none"/></g><g transform="${mLeft(54, 30, 56)}"><rect x="6" y="5" width="26" height="13" fill="${DK2}"/><rect x="38" y="5" width="26" height="13" fill="${DK2}"/></g><g transform="${mRight(132, 58, 34)}"><rect x="8" y="4" width="14" height="6" fill="${T0}" stroke="${INK}"/><rect x="36" y="4" width="14" height="6" fill="${T0}" stroke="${INK}"/></g>`;
+  const sw = km.length * 17 + 74, e0 = P(RL, 46), sgn = `<line x1="${e0[0] + 30}" y1="${e0[1] + 4}" x2="${e0[0] + 30}" y2="${e0[1] - 96}" stroke="${INK}" stroke-width="3px"/><g transform="translate(${f1(e0[0] + 30)},${f1(e0[1] - 96)})"><g transform="scale(${L ? 1 : 1.5})"><rect x="${-sw / 2}" y="-46" width="${sw}" height="50" rx="5" fill="${T0}" stroke="${INK}"/><text class="num" x="${sw / 2 - 48}" y="-9" font-size="38" text-anchor="end" fill="${INK}">${km}</text><text class="zh" x="${sw / 2 - 42}" y="-11" font-size="15" fill="${INK}">公里</text></g></g>`;
+  const road = `${ground(10, 10, RL, 92)}<polygon points="${pp([0, 0], [RL, 0], [RL, 92], [0, 92])}" fill="${T1}" stroke="${INK}"/><line x1="${P(10, 46)[0]}" y1="${P(10, 46)[1]}" x2="${P(RL - 10, 46)[0]}" y2="${P(RL - 10, 46)[1]}" stroke="${T0}" stroke-width="3px" stroke-dasharray="16 14"/><line id="${id}tr" x1="${P(0, 17)[0]}" y1="${P(0, 17)[1]}" stroke="${EM}" stroke-width="3px"/>`;
+  const h = hero(m, L ? 190 : 116, L ? 1170 : 195, L ? 215 : 112, L ? 'end' : 'middle', INK);
+  const svg = `<g ${at([[820, 290, .9], [262, 262, .6]], L)}><g transform="${mTop(0, 0, 0)}" stroke="${INK}" stroke-width="2.6px"><g transform="translate(-10,70)">${tl}</g></g></g>
+    <g ${at([[130, 345, .92], [52, 372, .56]], L)}>${ph}</g>
+    <g ${at([[370, 322, 1], [70, 418, .5]], L)}>${road}<g id="${id}car">${car}</g>${sgn}</g>${h.svg}`;
+  let marks;
+  return { svg, update(p) {
+    if (!marks) marks = Array.from({ length: NT }, (_, i) => document.getElementById(id + 'm' + i));
+    const e = ease(p / .7); h.set(e);
+    const cyc = Math.min(m.value, 14), u = p >= .7 ? 1 : (seg(p, 0, .7) * cyc) % 1, lv = 162 * (p <= .002 ? 0 : u), r = document.getElementById(id + 'lv');
+    r.setAttribute('y', f1(231 - lv)); r.setAttribute('height', f1(lv));
+    const nt = Math.round(Math.min(NT, m.value) * e); marks.forEach((k, i) => k.setAttribute('opacity', i < nt ? 1 : 0));
+    const cx = (RL - 150) * io(seg(p, .12, .96)), o = P(cx, 17);
+    document.getElementById(id + 'car').setAttribute('transform', `translate(${f1(o[0])},${f1(o[1])})`);
+    const t = document.getElementById(id + 'tr'), o2 = P(cx + 4, 17); t.setAttribute('x2', f1(o2[0])); t.setAttribute('y2', f1(o2[1]));
+  } };
+}
+
+// ---------- 9 Engineer ----------
+function engineer(id) {
+  const leg = (x, y) => box(x, y, 0, 8, 8, 72, { t: T2, l: T2, r: T3 });
+  const hp = P(106, -37, 134);
+  const svg = ground(14, -60, 210, 176) +
+    box(84, -58, 0, 44, 40, 44, { t: T1, l: T2, r: T2 }) +
+    box(80, -50, 50, 52, 26, 60, { t: EM, l: EM, r: EMD }) +
+    `<g transform="translate(${f1(hp[0])},${f1(hp[1])})"><rect x="-7" y="14" width="14" height="14" fill="${T0}" stroke="${INK}"/><circle r="23" fill="${T0}" stroke="${INK}"/><path d="M-23,-2 A23,23 0 0 1 23,-2 C14,-10 2,-12 -8,-8 C-14,-6 -19,-4 -23,-2Z" fill="${DK2}" stroke="${INK}"/><g fill="${T0}" stroke="${INK}"><circle cx="-11" cy="5" r="6.5"/><circle cx="5" cy="8" r="6.5"/></g><line x1="-4.5" y1="6" x2="-1.5" y2="7" stroke="${INK}"/></g>` +
+    leg(6, 6) + leg(196, 6) + leg(6, 96) + leg(196, 96) + box(0, 0, 72, 210, 110, 8, { t: T0, l: T1, r: T2 }) +
+    `<g id="${id}a1">${box(84, -26, 86, 10, 66, 9, { t: EM, l: EM, r: EMD })}</g><g id="${id}a2">${box(120, -26, 86, 10, 66, 9, { t: EM, l: EM, r: EMD })}</g>` +
+    box(68, 34, 80, 78, 50, 4, { t: T2, l: T3, r: T3 }) + box(68, 80, 84, 78, 4, 52, { t: DK1, l: DK2, r: DK3 }) +
+    `<g transform="${mLeft(84, 68, 136)}"><circle cx="39" cy="26" r="6" fill="${EM}"/></g>` +
+    box(22, 62, 80, 22, 22, 20, { t: DK2, l: T0, r: T1 }) +
+    `<g transform="translate(${f1(P(182, 40, 80)[0])},${f1(P(182, 40, 80)[1])})"><line x1="-12" y1="0" x2="-6" y2="-10" stroke="${INK}" stroke-width="3px"/><line x1="12" y1="0" x2="6" y2="-10" stroke="${INK}" stroke-width="3px"/><circle cy="-34" r="28" fill="${EM}" stroke="${INK}"/><circle cy="-34" r="21" fill="${T0}" stroke="${INK}"/><line id="${id}h1" x1="0" y1="-34" x2="0" y2="-51" stroke="${INK}" stroke-width="2.6px"/><line id="${id}h2" x1="0" y1="-34" x2="10" y2="-34" stroke="${INK}" stroke-width="2.6px"/><circle cy="-34" r="2.5" fill="${INK}"/></g>`;
+  return { svg, set(p, e) {
+    const r = d => d * Math.PI / 180, a1 = e * 1080, a2 = e * 90 + 60, h1 = document.getElementById(id + 'h1'), h2 = document.getElementById(id + 'h2'); if (!h1) return;
+    h1.setAttribute('x2', f1(17 * Math.sin(r(a1)))); h1.setAttribute('y2', f1(-34 - 17 * Math.cos(r(a1))));
+    h2.setAttribute('x2', f1(11 * Math.sin(r(a2)))); h2.setAttribute('y2', f1(-34 - 11 * Math.cos(r(a2))));
+    const st = Math.floor(p * 90), on = p > .004 && p < .995;
+    document.getElementById(id + 'a1').setAttribute('transform', `translate(0,${on && st % 2 ? -4 : 0})`);
+    document.getElementById(id + 'a2').setAttribute('transform', `translate(0,${on && st % 2 === 0 ? -4 : 0})`);
+  } };
+}
+function sValue(m, L, M) {
+  const id = 'v' + (uid++), ty = M.typing, st = slabs(ty, id + 's'), en = engineer(id);
+  const h = hero(m, L ? 210 : 120, L ? 60 : 195, L ? 250 : 122, L ? 'start' : 'middle', EM, L ? 560 : 0);
+  const tag = P(0, 110, st.h * .55);
+  const svg = `${h.svg}<g ${at([[250, 420, 1.15], [92, 330, .62]], L)}>${en.svg}</g>
+    <g ${at([[900, 462, 1.45], [270, 520, .92]], L)}>${ground(20, 0, 150, 110)}${st.svg}<g id="${id}tg" transform="translate(${f1(tag[0] - 8)},${f1(tag[1])})"><line x1="0" y1="0" x2="-26" y2="-14" stroke="${INK}"/><g transform="translate(-26,-14)"><rect x="${-(fmt(ty.value).length * 9 + ty.unit.length * 15 + 82)}" y="-17" width="${fmt(ty.value).length * 9 + ty.unit.length * 15 + 82}" height="30" rx="3" fill="${T0}" stroke="${INK}"/><text class="zh" x="-9" y="4" font-size="14" text-anchor="end" fill="${INK}">人要打 ${fmt(ty.value)} ${ty.unit}</text></g></g></g>`;
+  return { svg, update(p) { const e = ease(p / .8); h.set(e); st.set(seg(p, 0, .7)); en.set(p, e); document.getElementById(id + 'tg').setAttribute('opacity', f1(seg(p, .55, .7))); } };
+}
+window.__P = { setW: w => { CW = w; }, gpuCard, keyboard, taiwan, engineer, at, ground, C, $, reduce, DAY, iso, ymd, INK, T0, T1, T2, T3, EM, clamp, ease, fmt, esc, odo, hero, box, mTop, mLeft, P, pp, scenes: { 'gpu-days': sGpu, 'cache-saved': sCache, 'gpu-share': sRack, typing: sType, 'code-lines': sCode, laps: sLaps, rereads: sRead, energy: sEnergy, value: sValue } };
+})();
+
+</script>
+<script>
+var flame = null;
+(function () {
+'use strict';
+const { C, $, reduce, DAY, iso, ymd, INK, T0, T1, T2, T3, EM, clamp, ease, fmt, esc, hero, box, P, pp, mTop, scenes, setW, gpuCard, keyboard, taiwan, engineer } = window.__P;
+const SHORT = { 'gpu-days': () => '一張 H100 要連跑', typing: () => 'AI 寫的字，人要打', laps: m => m.unit === '圈' ? '全部 tokens 排成一行，環島台灣' : '全部 tokens 排成一行', value: () => '等效價值，只值工程師' };
+const ORDER = ['gpu-days', 'cache-saved', 'gpu-share', 'typing', 'code-lines', 'laps', 'rereads', 'energy', 'value'];
+const NOTE_IN_SCENE = { 'code-lines': 1, value: 1, energy: 1 };
+
+// Example data, labelled 範例資料 in the bar
+function sampleRows() {
+  let seed = 7; const r = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+  const end = Date.UTC(2026, 10, 23), rows = [];
+  const mix = [['claude-opus-4-5', 'claude', .58], ['claude-sonnet-4-5', 'claude', .2], ['gpt-5-codex', 'codex', .11], ['gemini-2.5-pro', 'gemini', .07], ['claude-haiku-4-5', 'claude', .04]];
+  for (let i = 364; i >= 0; i--) {
+    const t = end - i * DAY, dow = new Date(t).getUTCDay(), we = dow === 0 || dow === 6;
+    if (r() < (we ? .35 : .08) && i > 20) continue;
+    const ramp = .35 + 1.25 * Math.pow((365 - i) / 365, 1.5);
+    let day = ramp * (10 + 52 * Math.pow(r(), 1.6)) * 1e6 * (we ? .6 : 1) * (dow === 2 || dow === 3 ? 1.18 : 1);
+    if (i === 41) day = 212e6; if (i === 12) day = 168e6; if (i === 96) day = 151e6;
+    for (const [model, tool, share] of mix) {
+      const v = day * share * (.75 + r() * .5);
+      rows.push({ d: iso(t), tool, model, in: Math.round(v * .006), out: Math.round(v * .034), cr: Math.round(v * .9), cw: Math.round(v * .06), cw1h: Math.round(v * .02), think: Math.round(v * .012), n: Math.round(v / 140000) + 1 });
+    }
+  }
+  return rows;
+}
+const SAMPLE_NOW = Date.UTC(2026, 10, 23, 12);
+const S = { rows: null, mine: false, list: [], sum: null, mets: null };
+const isL = () => innerWidth > 720;
+let wasL = isL();
+const big = n => n >= 1e8 ? { value: Math.round(n / 1e7) / 10, unit: '億' } : n >= 1e4 ? { value: Math.round(n / 1e3) / 10, unit: '萬' } : { value: Math.round(n), unit: '' };
+const colOf = m => /opus/.test(m) ? 'ember' : /sonnet/.test(m) ? 'amber' : /haiku/.test(m) ? 'sand' : /gemini/.test(m) ? 'cobalt' : /gpt|codex|^o\d/.test(m) ? 'graphite' : 'ember';
+const MCOL = { ember: '#ea4a0c', amber: '#f0a030', sand: '#d9b48a', graphite: '#3a3632', cobalt: '#2f6fdc' };
+const ICON = {
+  'gpu-days': `<circle cx="22" cy="22" r="17" fill="${INK}"/>${[0, 72, 144, 216, 288].map(a => `<path transform="rotate(${a} 22 22)" d="M22,19 C28,14 32,10 28,6 C23,6 20,12 22,19Z" fill="${T1}"/>`).join('')}<circle cx="22" cy="22" r="3.5" fill="${EM}"/>`,
+  typing: `<rect x="5" y="14" width="34" height="20" rx="3" fill="${T0}" stroke="${INK}"/>${[0, 1, 2, 3].map(i => `<rect x="${9 + i * 7}" y="18" width="5" height="5" fill="${i === 3 ? EM : INK}"/>`).join('')}<rect x="12" y="27" width="20" height="4" fill="${INK}"/>`,
+  laps: `<circle cx="22" cy="22" r="14" fill="${T1}" stroke="${INK}"/><ellipse cx="22" cy="22" rx="20" ry="6" fill="none" stroke="${EM}" stroke-width="2.4px" transform="rotate(-18 22 22)"/>`,
+  value: `<line x1="22" y1="8" x2="22" y2="38" stroke="${INK}"/><line x1="6" y1="16" x2="38" y2="9" stroke="${INK}" stroke-width="2.4px"/><rect x="2" y="24" width="12" height="8" fill="${INK}"/><circle cx="37" cy="20" r="5" fill="${EM}" stroke="${INK}"/><line x1="14" y1="38" x2="30" y2="38" stroke="${INK}" stroke-width="2.4px"/>`
+};
+
+function build() {
+  const L = isL(); wasL = L; setW(L ? 1200 : 390);
+  const s = S.sum, mets = S.mets, M = Object.fromEntries(mets.map(m => [m.id, m])), per = `${ymd(s.firstDay)}–${ymd(s.lastDay)}`;
+  $('src').innerHTML = `<b>${S.mine ? '我的資料' : '範例資料'}</b>`;
+  $('pick').textContent = S.mine ? '回到範例' : '讀取我的紀錄';
+  const main = $('main'); let html = '';
+  const tk = big(s.totals.tokens);
+  setW(L ? 1200 : 390);
+  const tw0 = taiwan('itw', M.laps.raw.taiwanLaps, { maxL: 3 }), en0 = engineer('ien'), kb0 = keyboard('ikb');
+  const usd = c => '$' + (c >= 100000 ? Math.round(c / 100).toLocaleString('en-US') : (c / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+  const tokS = n => { const q = big(n); return fmt(q.value) + (q.unit ? ' ' + q.unit : ''); };
+  const loopKm = (C.ASSUMPTIONS && C.ASSUMPTIONS.taiwanLoopKm) || 968;
+  const TILE = [
+    ['gpu-days', gpuCard(), 'translate(196,112) scale(.94)', '全部模型的 tokens，換成一張 H100 連續運算的時間'],
+    ['typing', kb0.svg, 'translate(188,70) scale(.9)', '全部模型輸出的字，人以每分鐘 40 字連續打完的時間'],
+    ['laps', tw0.svg, 'translate(330,216) scale(.86)', M.laps.unit === '圈' ? `全部 tokens 排成一行字的長度，環島一圈 ${loopKm} 公里` : '全部 tokens 排成一行字的長度'],
+    ['value', en0.svg, 'translate(238,258) scale(1.26)', '等效 API 價值，換成時薪 100 美元的資深工程師工時']
+  ];
+  const totTok = s.perModel.reduce((a, m) => a + m.tokens, 0) || 1;
+  const pct = v => { const q = v * 100; return (q >= 10 ? Math.round(q) : q >= 1 ? q.toFixed(1) : q > 0 ? '<1' : '0') + '%'; };
+  html += `<section class="intro"><div class="dash">
+    <div class="facts">
+      <div class="fact big burn"><canvas id="flame" class="flame" aria-hidden="true"></canvas><span class="lb">總 tokens 燃燒量</span><b title="${s.totals.tokens.toLocaleString('en-US')} tokens">${fmt(tk.value)}<em>${tk.unit}</em></b></div>
+      <div class="fact big"><span class="lb">等效 API 價值</span><b class="em">${usd(s.usdTotal)}</b></div>
+      <div class="fact span"><span class="v">${per}　${s.activeDays} 天</span></div>
+    </div>
+    <div class="models">
+      <div class="mbar" role="img" aria-label="各模型 tokens 占比">${s.perModel.map(m => `<i style="flex:${Math.max(m.tokens / totTok, .004)};background:${MCOL[colOf(m.model)]}" title="${esc(m.model)} ${pct(m.tokens / totTok)}"></i>`).join('')}</div>
+      <table><tbody>${s.perModel.map(m => `<tr><td><i class="dot" style="background:${MCOL[colOf(m.model)]}"></i>${esc(m.model)}</td><td title="${m.tokens.toLocaleString('en-US')} tokens · ${pct(m.tokens / totTok)}">${tokS(m.tokens)}</td><td>${usd(m.usd)}</td></tr>`).join('')}</tbody></table>
+    </div>
+    <div class="tiles">${TILE.map(v => { const m = M[v[0]]; return `<a class="tile" href="#sc-${v[0]}" title="${esc(v[3])}"><svg viewBox="0 0 660 440" aria-hidden="true"><g transform="${v[2]}">${v[1]}</g></svg><span class="tt">${SHORT[v[0]](m)}</span><b${v[0] === 'value' ? ' class="em"' : ''}>${fmt(m.value)}<em>${m.unit}</em></b></a>`; }).join('')}</div>
+  </div></section>`;
+  setW(L ? 1200 : 390); S.list = [];
+  ORDER.forEach((id, i) => {
+    const m = M[id]; if (!m) return;
+    const api = scenes[id](m, L, M);
+    html += `<section class="sc" id="sc-${id}" data-id="${id}"><div class="stage"><h2><small>${i + 1}/9</small>${esc(m.title)}</h2><svg viewBox="0 0 ${L ? 1200 : 390} ${L ? 660 : 640}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(m.title)} ${fmt(m.value)} ${m.unit}">${api.svg}</svg></div></section>`;
+    S.list.push({ id, api, sp: -1 });
+  });
+  const pick = ['gpu-days', 'typing', 'laps', 'value'].map(id => M[id]);
+  const text = `我這一年燒掉 ${fmt(tk.value)} ${tk.unit} tokens。${pick[0].title} ${fmt(pick[0].value)} ${pick[0].unit}，${pick[1].title} ${fmt(pick[1].value)} ${pick[1].unit}`;
+  html += `<section class="end"><div class="card"><h3>Tokenburn</h3><div class="per">${S.mine ? '' : '範例資料　'}${per}　${fmt(tk.value)} ${tk.unit} tokens</div><ul>${pick.map(m => `<li><svg viewBox="0 0 44 44" aria-hidden="true">${ICON[m.id]}</svg><span>${esc(m.title)}</span><b>${fmt(m.value)}<em>${m.unit}</em></b></li>`).join('')}</ul></div>
+    <div class="acts"><a class="btn em" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}">分享到 X</a><a class="btn" target="_blank" rel="noopener" href="https://www.threads.net/intent/post?text=${encodeURIComponent(text)}">分享到 Threads</a><button class="btn" type="button" id="copy">複製文字</button></div>
+    <details class="algo"><summary>算法</summary><dl>${ORDER.map(id => M[id]).filter(Boolean).map(m => `<dt>${esc(m.title)} ${fmt(m.value)} ${m.unit}${m.estimate ? '（估算）' : ''}</dt><dd>${esc(m.formula)}。${esc(m.note)}</dd>`).join('')}</dl></details></section>`;
+  main.innerHTML = html;
+  if (flame) { try { flame.destroy(); } catch (e) {} flame = null; }
+  const fc = $('flame');
+  if (fc && !reduce && window.PyroFX && PyroFX.supported()) { try { flame = PyroFX.fire(fc, { quality: 'low' }); if (flame) flame.setHeat(.62); } catch (e) { flame = null; } }
+  S.list.forEach(sc => { sc.el = main.querySelector(`.sc[data-id="${sc.id}"]`); sc.root = sc.el.querySelector('svg'); });
+  $('copy').onclick = () => { (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => say('已複製'), () => say('無法複製')); };
+  S.intro = null;
+  tw0.set(1, false); en0.set(0, .3);
+  S.ifans = main.querySelectorAll('.intro .fan'); S.mix = mixOf(s);
+}
+function load(rows, mine) {
+  S.rows = rows; S.mine = mine;
+  S.sum = C.computeSummary(rows, { now: mine ? Date.now() : SAMPLE_NOW });
+  S.mets = C.computeMetaphors(S.sum);
+  build();
+}
+
+// ---------- Ink between scenes ----------
+const cv = $('ink'), veil = $('veil'); let ink = null;
+if (!reduce && window.PyroFX && PyroFX.supported()) { try { ink = PyroFX.ink(cv, { quality: 'auto' }); } catch (e) { ink = null; } }
+if (!ink) { cv.hidden = true; veil.hidden = true; }
+function mixOf(s) { const col = m => /opus/.test(m) ? 'ember' : /sonnet/.test(m) ? 'amber' : /haiku/.test(m) ? 'sand' : /gemini/.test(m) ? 'cobalt' : /gpt|codex|^o\d/.test(m) ? 'graphite' : 'ember'; const tot = s.perModel.reduce((a, m) => a + m.tokens, 0) || 1; return s.perModel.map(m => [col(m.model), m.tokens / tot]); }
+const pickInk = () => { let r = Math.random(), a = 0; for (const [c, w] of S.mix || []) { a += w; if (r <= a) return c; } return 'ember'; };
+let lastY = scrollY, movedAt = 0, pourAcc = 0, veilO = 1, fanA = 0, lp = null;
+addEventListener('pointermove', e => { if (!ink || e.pointerType === 'touch') return; const x = e.clientX / innerWidth, y = e.clientY / innerHeight; if (lp) ink.stir(x, y, x - lp[0], y - lp[1]); lp = [x, y]; }, { passive: true });
+document.addEventListener('pointerleave', () => { lp = null; });
+
+let last = performance.now();
+function frame(t) {
+  const dt = Math.min(64, t - last); last = t;
+  const vh = innerHeight; let cur = 0;
+  if (S.intro) { const f = reduce ? 1 : ease((t - S.intro.t0) / 1500); S.intro.set(f); if (f >= 1) S.intro = null; }
+  S.list.forEach((sc, i) => {
+    const r = sc.el.getBoundingClientRect();
+    if (r.top < vh * .5) cur = i + 1;
+    if (r.bottom < -50 || r.top > vh + 50) return;
+    const p = reduce ? 1 : clamp(-r.top / Math.max(1, r.height - vh));
+    if (sc.sp < 0) sc.sp = p; else { sc.sp += (p - sc.sp) * Math.min(1, dt / 110); if (Math.abs(p - sc.sp) < .0004) sc.sp = p; }
+    try { sc.api.update(sc.sp, dt, sc.root); } catch (e) { if (!sc.err) { sc.err = 1; console.error(sc.id, e); } }
+  });
+  $('idx').textContent = cur ? `${Math.min(cur, 9)} / 9` : '';
+  if (S.ifans && S.ifans.length && scrollY < vh && !reduce) { fanA = (fanA + dt * .25) % 360; S.ifans.forEach((f, i) => f.setAttribute('transform', `rotate(${(i ? -fanA : fanA).toFixed(1)})`)); }
+  if (flame && scrollY < vh) flame.frame(t);
+  if (ink) {
+    // T = how close a scene boundary is to the middle of the screen
+    let T = 0; const n = S.list.length;
+    S.list.forEach((sc, i) => { const r = sc.el.getBoundingClientRect(); T = Math.max(T, 1 - Math.abs(r.top - vh * .5) / (vh * .52)); if (i === n - 1) T = Math.max(T, 1 - Math.abs(r.bottom - vh * .5) / (vh * .52)); });
+    T = clamp(T);
+    if (Math.abs(scrollY - lastY) > .5) movedAt = t; lastY = scrollY;
+    if (T > .1 && t - movedAt < 260) { pourAcc += dt * 16 * T; while (pourAcc >= 1000) { pourAcc -= 1000; ink.pour(.08 + .84 * Math.random(), .35 + .55 * T * Math.random(), pickInk()); } }
+    const vo = .93 * (1 - Math.min(1, T * 1.6)); veilO += (vo - veilO) * Math.min(1, dt / 320); veil.style.opacity = veilO.toFixed(3);
+    ink.frame(t);
+  }
+  requestAnimationFrame(frame);
+}
+
+// ---------- Reading local logs ----------
+const kindOf = path => { const n = path.split('/').pop(); if (/^rollout-.*\.jsonl$/.test(n)) return 'codex'; if (/\.jsonl$/.test(n)) return 'claude'; if (/^session-.*\.json$/.test(n) && /chats\//.test(path)) return 'gemini'; return null; };
+const toast = $('toast'); let tt;
+function say(m, keep) { toast.textContent = m; toast.hidden = false; clearTimeout(tt); if (!keep) tt = setTimeout(() => toast.hidden = true, 2200); }
+let depth = 0;
+async function ingest(files) {
+  depth = 0; $('drop').hidden = true;
+  const list = files.map(f => ({ f, p: f.webkitRelativePath || f._path || f.name })).map(x => (x.k = kindOf(x.p), x)).filter(x => x.k);
+  if (!list.length) { say('這個資料夾裡沒有紀錄檔'); return; }
+  const agg = C.createAggregator();
+  for (let i = 0; i < list.length; i++) {
+    try { const t = await list[i].f.text(); list[i].k === 'claude' ? agg.addClaudeFile(t) : list[i].k === 'codex' ? agg.addCodexFile(t) : agg.addGeminiFile(t); } catch (e) {}
+    if (i % 25 === 0) { say(`解析中 ${i + 1} / ${list.length}`, true); await new Promise(r => setTimeout(r)); }
+  }
+  toast.hidden = true;
+  const rows = agg.rows();
+  if (!rows.length) { say('紀錄檔裡沒有用量資料'); return; }
+  scrollTo({ top: 0 }); if (ink) ink.reset(); load(rows, true);
+}
+const dir = $('dir');
+$('pick').onclick = () => { if (S.mine) { scrollTo({ top: 0 }); load(sampleRows(), false); } else dir.click(); };
+dir.onchange = () => { if (dir.files.length) ingest([...dir.files]); dir.value = ''; };
+async function walk(e, pre, out) {
+  if (e.isFile) await new Promise(res => e.file(f => { f._path = pre + f.name; out.push(f); res(); }, res));
+  else if (e.isDirectory) { const rd = e.createReader(); let b; do { b = await new Promise(res => rd.readEntries(res, () => res([]))); for (const x of b) await walk(x, pre + e.name + '/', out); } while (b.length); }
+}
+addEventListener('dragenter', e => { if ([...(e.dataTransfer?.types || [])].includes('Files')) { depth++; $('drop').hidden = false; } });
+addEventListener('dragleave', () => { depth = Math.max(0, depth - 1); if (!depth) $('drop').hidden = true; });
+addEventListener('dragover', e => e.preventDefault());
+addEventListener('drop', async e => { e.preventDefault(); const it = [...(e.dataTransfer?.items || [])].map(i => i.webkitGetAsEntry && i.webkitGetAsEntry()).filter(Boolean); const out = []; if (it.length) for (const x of it) await walk(x, '', out); else out.push(...(e.dataTransfer?.files || [])); ingest(out); });
+let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (isL() !== wasL) build(); if (ink) ink.resize(); }, 150); });
+
+window.__pyro = { load, sampleRows };  // test hook: load(rows, mine)
+load(sampleRows(), false);
+requestAnimationFrame(frame);
+})();
+
+</script>
