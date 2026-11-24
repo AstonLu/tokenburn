@@ -79,7 +79,7 @@ export function computeMetaphors(s, over = {}) {
       formula: '快取讀取 tokens ÷ 一次約 10 萬 tokens 的上下文', note: '每次對話都從頭讀一遍你的程式碼', raw: {} },
     { id: 'energy', title: '這些算力用掉的電，夠 iPhone 充飽', value: round(kwh * 1000 / A.iphoneWh), unit: '次', estimate: true,
       formula: '顯卡小時 × 700 瓦 × 機房係數 1.2', note: `共 ${round(kwh)} 度電，夠電動車開 ${Math.round(kwh / A.evKwhPer100km * 100).toLocaleString('en-US')} 公里`, raw: { kwh, evKm: kwh / A.evKwhPer100km * 100 } },
-    { id: 'value', title: '但這一切的等效價值，只等於資深工程師工作', value: round(humanDuration(usd / A.seniorUsdPerHour).value), unit: humanDuration(usd / A.seniorUsdPerHour).unit, estimate: false,
+    { id: 'value', title: '但這一切的等效價值，只等於資深工程師工作', value: usd / A.seniorUsdPerHour >= 1 ? round(usd / A.seniorUsdPerHour) : round(usd / A.seniorUsdPerHour * 60), unit: usd / A.seniorUsdPerHour >= 1 ? '小時' : '分鐘', estimate: false,
       formula: '等效 API 價值 ÷ 時薪 100 美元', note: `對比：AI 的輸出量人要打 ${round(d5.value)} ${d5.unit}`, raw: { usd } },
   ];
 }
