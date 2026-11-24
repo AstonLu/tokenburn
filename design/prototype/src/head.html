@@ -35,7 +35,8 @@ main { position:relative; z-index:1; }
 .facts { display:grid; grid-template-columns:auto auto; justify-content:start; column-gap:clamp(28px,4vw,60px); row-gap:clamp(8px,1.6vh,16px); align-content:start; }
 .fact b { display:block; font-family:var(--disp); font-weight:900; font-size:clamp(64px,13.5vh,124px); line-height:.9; margin-top:10px; white-space:nowrap; }
 .fact b em { font-family:var(--zh); font-style:normal; font-size:.3em; margin-left:.12em; }
-.fact.burn { position:relative; isolation:isolate; }
+.fact { position:relative; }
+.fact.burn { isolation:isolate; }
 .fact.burn .flame { position:absolute; left:-12%; right:-16%; top:-34%; bottom:-26%; z-index:-1; pointer-events:none; display:block; -webkit-mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent),linear-gradient(to top,transparent,#000 12%); -webkit-mask-composite:source-in; mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent),linear-gradient(to top,transparent,#000 12%); mask-composite:intersect; }
 .fact.burn .lb, .fact.burn b { position:relative; }
 @media (max-width: 700px) { .fact.burn .flame { top:-20%; bottom:-6%; } }
@@ -92,6 +93,12 @@ svg text { stroke:none; }
 .card li:last-child b { color:var(--ember); }
 .acts { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
 .acts a { text-decoration:none; color:var(--ink); display:inline-flex; align-items:center; }
+.sheet-bg { position:fixed; z-index:45; inset:0; background:rgba(20,18,16,.32); display:grid; place-items:center; padding:16px; }
+.sheet { background:var(--paper); border:1.5px solid var(--ink); border-radius:14px; padding:24px; max-width:440px; width:100%; }
+.sheet h2 { margin:0 0 10px; font-size:20px; }
+.sheet p { margin:0 0 12px; font-size:15px; font-variant-numeric:tabular-nums; }
+.sheet ul { margin:0 0 20px; padding-left:18px; font-size:14px; color:var(--quiet); line-height:1.7; }
+.sheet-acts { display:flex; justify-content:flex-end; gap:10px; }
 .toast { position:fixed; z-index:40; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:var(--paper); padding:9px 16px; border-radius:999px; font-size:13px; font-variant-numeric:tabular-nums; }
 .drop { position:fixed; inset:0; z-index:30; display:grid; place-items:center; background:rgba(250,248,244,.92); }
 .drop div { border:2px dashed var(--ember); border-radius:10px; padding:44px 52px; font-size:22px; font-weight:900; background:var(--paper); }
@@ -126,6 +133,7 @@ svg text { stroke:none; }
   <div class="src" id="src"></div>
   <span class="sp"></span>
   <span class="idx" id="idx"></span>
+  <button class="btn em" id="publish" type="button" hidden>公開分享</button>
   <button class="btn" id="pick" type="button">讀取我的紀錄</button>
   <input type="file" id="dir" webkitdirectory multiple hidden>
 </header>
@@ -133,3 +141,14 @@ svg text { stroke:none; }
 <main id="main"></main>
 <div class="toast" id="toast" hidden role="status"></div>
 <div class="drop" id="drop" hidden><div>放開以讀取</div></div>
+<div class="sheet-bg" id="sheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-t">
+    <h2 id="sheet-t">公開分享</h2>
+    <p id="sheet-p"></p>
+    <ul>
+      <li>會上傳：每天、每個模型的 token 數字</li>
+      <li>不會上傳：檔案路徑、專案名稱、程式碼、對話內容</li>
+    </ul>
+    <div class="sheet-acts"><button class="btn" type="button" id="sheet-no">取消</button><button class="btn em" type="button" id="sheet-ok">上傳並產生網址</button></div>
+  </div>
+</div>

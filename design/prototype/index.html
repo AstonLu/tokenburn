@@ -35,7 +35,8 @@ main { position:relative; z-index:1; }
 .facts { display:grid; grid-template-columns:auto auto; justify-content:start; column-gap:clamp(28px,4vw,60px); row-gap:clamp(8px,1.6vh,16px); align-content:start; }
 .fact b { display:block; font-family:var(--disp); font-weight:900; font-size:clamp(64px,13.5vh,124px); line-height:.9; margin-top:10px; white-space:nowrap; }
 .fact b em { font-family:var(--zh); font-style:normal; font-size:.3em; margin-left:.12em; }
-.fact.burn { position:relative; isolation:isolate; }
+.fact { position:relative; }
+.fact.burn { isolation:isolate; }
 .fact.burn .flame { position:absolute; left:-12%; right:-16%; top:-34%; bottom:-26%; z-index:-1; pointer-events:none; display:block; -webkit-mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent),linear-gradient(to top,transparent,#000 12%); -webkit-mask-composite:source-in; mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent),linear-gradient(to top,transparent,#000 12%); mask-composite:intersect; }
 .fact.burn .lb, .fact.burn b { position:relative; }
 @media (max-width: 700px) { .fact.burn .flame { top:-20%; bottom:-6%; } }
@@ -92,6 +93,12 @@ svg text { stroke:none; }
 .card li:last-child b { color:var(--ember); }
 .acts { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
 .acts a { text-decoration:none; color:var(--ink); display:inline-flex; align-items:center; }
+.sheet-bg { position:fixed; z-index:45; inset:0; background:rgba(20,18,16,.32); display:grid; place-items:center; padding:16px; }
+.sheet { background:var(--paper); border:1.5px solid var(--ink); border-radius:14px; padding:24px; max-width:440px; width:100%; }
+.sheet h2 { margin:0 0 10px; font-size:20px; }
+.sheet p { margin:0 0 12px; font-size:15px; font-variant-numeric:tabular-nums; }
+.sheet ul { margin:0 0 20px; padding-left:18px; font-size:14px; color:var(--quiet); line-height:1.7; }
+.sheet-acts { display:flex; justify-content:flex-end; gap:10px; }
 .toast { position:fixed; z-index:40; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:var(--paper); padding:9px 16px; border-radius:999px; font-size:13px; font-variant-numeric:tabular-nums; }
 .drop { position:fixed; inset:0; z-index:30; display:grid; place-items:center; background:rgba(250,248,244,.92); }
 .drop div { border:2px dashed var(--ember); border-radius:10px; padding:44px 52px; font-size:22px; font-weight:900; background:var(--paper); }
@@ -126,6 +133,7 @@ svg text { stroke:none; }
   <div class="src" id="src"></div>
   <span class="sp"></span>
   <span class="idx" id="idx"></span>
+  <button class="btn em" id="publish" type="button" hidden>公開分享</button>
   <button class="btn" id="pick" type="button">讀取我的紀錄</button>
   <input type="file" id="dir" webkitdirectory multiple hidden>
 </header>
@@ -133,6 +141,17 @@ svg text { stroke:none; }
 <main id="main"></main>
 <div class="toast" id="toast" hidden role="status"></div>
 <div class="drop" id="drop" hidden><div>放開以讀取</div></div>
+<div class="sheet-bg" id="sheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-t">
+    <h2 id="sheet-t">公開分享</h2>
+    <p id="sheet-p"></p>
+    <ul>
+      <li>會上傳：每天、每個模型的 token 數字</li>
+      <li>不會上傳：檔案路徑、專案名稱、程式碼、對話內容</li>
+    </ul>
+    <div class="sheet-acts"><button class="btn" type="button" id="sheet-no">取消</button><button class="btn em" type="button" id="sheet-ok">上傳並產生網址</button></div>
+  </div>
+</div>
 <script>
 "use strict";window.PyroCore=(()=>{var B=Object.defineProperty;var We=Object.getOwnPropertyDescriptor;var fe=Object.getOwnPropertyNames;var ge=Object.prototype.hasOwnProperty;var ke=(e,t)=>{for(var c in t)B(e,c,{get:t[c],enumerable:!0})},Re=(e,t,c,u)=>{if(t&&typeof t=="object"||typeof t=="function")for(let a of fe(t))!ge.call(e,a)&&a!==c&&B(e,a,{get:()=>t[a],enumerable:!(u=We(t,a))||u.enumerable});return e};var ye=e=>Re(B({},"__esModule",{value:!0}),e);var Ee={};ke(Ee,{ASSUMPTIONS:()=>ee,CODEX_UNKNOWN_MODEL:()=>X,GEMINI_UNKNOWN_MODEL:()=>J,MODEL_RE:()=>q,PRICING:()=>I,PRICING_FALLBACKS:()=>Z,PRICING_META:()=>re,RATIO_MIN_TOKENS:()=>le,ROW_FIELDS:()=>Y,TITLE_RULES:()=>V,TOOLS:()=>ue,USAGE_FIELDS:()=>E,computeMetaphors:()=>de,computeSummary:()=>se,computeTitles:()=>G,createAggregator:()=>ae,humanDuration:()=>O,mergeRowMax:()=>ie,normModel:()=>_,parseClaudeLine:()=>L,parseCodexFile:()=>$,parseGeminiFile:()=>K,priceOf:()=>H,resolvePrice:()=>Q,toInt:()=>d,totalTokens:()=>U,utcDay:()=>x});var ce=Number.MAX_SAFE_INTEGER;function d(e){if(typeof e!="number"||!Number.isFinite(e)||e<=0)return 0;let t=Math.floor(e);return t>ce?ce:t}function x(e){if(typeof e!="string"&&typeof e!="number")return null;let t=typeof e=="number"?e:Date.parse(e);if(!Number.isFinite(t))return null;let u=new Date(t).toISOString().slice(0,10);return/^\d{4}-\d{2}-\d{2}$/.test(u)?u:null}var q=/^[a-z0-9.\-:_/]{1,64}$/;function _(e){if(typeof e!="string")return null;let t=e.trim().toLowerCase().replace(/\[[^\]]*\]/g,"");return t=t.replace(/[^a-z0-9.\-:_/]+/g,"-").replace(/-+/g,"-").replace(/^-|-$/g,""),t.length>64&&(t=t.slice(0,64)),q.test(t)?t:null}function k(e){return typeof e=="object"&&e!==null&&!Array.isArray(e)}function L(e){if(typeof e!="string"||!e.includes('"usage"')||!e.includes('"assistant"'))return null;let t;try{t=JSON.parse(e)}catch{return null}if(!k(t)||t.type!=="assistant")return null;let c=t.message;if(!k(c)||!k(c.usage)||c.model==="<synthetic>")return null;let u=_(c.model);if(!u)return null;let a=x(t.timestamp);if(!a)return null;let n=c.usage,o=k(n.cache_creation)?n.cache_creation:null,h=o?d(o.ephemeral_1h_input_tokens):0,p=o?d(o.ephemeral_5m_input_tokens):0,r=d(n.cache_creation_input_tokens);r===0&&h+p>0&&(r=h+p);let W=Math.min(h,r),g=d(n.output_tokens),s=k(n.output_tokens_details)?n.output_tokens_details:null,m=Math.min(s?d(s.thinking_tokens):0,g),y=typeof c.id=="string"&&c.id?c.id:null,R=typeof t.requestId=="string"&&t.requestId?t.requestId:null,w=y||R?`${y??""}:${R??""}`:null;return{d:a,model:u,key:w,in:d(n.input_tokens),out:g,cr:d(n.cache_read_input_tokens),cw:r,cw1h:W,think:m}}var X="codex-unknown";function ne(e){return k(e)?{input:d(e.input_tokens),cached:d(e.cached_input_tokens),output:d(e.output_tokens),reasoning:d(e.reasoning_output_tokens)}:null}function _e(e,t){return e.input===t.input&&e.cached===t.cached&&e.output===t.output&&e.reasoning===t.reasoning}function we(e,t){return!t||e.input<t.input||e.output<t.output?e:{input:e.input-t.input,cached:Math.max(0,e.cached-t.cached),output:e.output-t.output,reasoning:Math.max(0,e.reasoning-t.reasoning)}}function $(e){let t=[];if(typeof e!="string")return t;let c=null,u=null;for(let a of e.split(`
 `)){if(!a||a.charCodeAt(0)!==123)continue;let n;try{n=JSON.parse(a)}catch{continue}if(!k(n)||!k(n.payload))continue;let o=n.payload;if(n.type==="turn_context"){let s=_(o.model);s&&(c=s);continue}if(n.type==="session_meta"){let s=_(o.model);s&&!c&&(c=s);continue}if(n.type!=="event_msg"||o.type!=="token_count"||!k(o.info))continue;let h=ne(o.info.total_token_usage),p=ne(o.info.last_token_usage);if(h&&u&&_e(h,u))continue;let r=p??(h?we(h,u):null);if(h&&(u=h),!r||r.input+r.output+r.cached===0)continue;let W=x(n.timestamp);if(!W)continue;let g=Math.min(r.cached,r.input);t.push({d:W,model:c??X,key:null,in:r.input-g,out:r.output,cr:g,cw:0,cw1h:0,think:Math.min(r.reasoning,r.output)})}return t}var J="gemini-unknown";function K(e){let t=[];if(typeof e!="string")return t;let c;try{c=JSON.parse(e)}catch{return t}let u,a="";if(Array.isArray(c))u=c;else if(k(c)&&Array.isArray(c.messages))u=c.messages,typeof c.sessionId=="string"&&(a=c.sessionId);else return t;for(let n of u){if(!k(n)||!k(n.tokens))continue;let o=n.tokens,h=x(n.timestamp);if(!h)continue;let p=d(o.input),r=Math.min(d(o.cached),p),W=d(o.thoughts),g=d(o.output)+W,s=d(o.tool);if(p+g+s===0)continue;let m=typeof n.id=="string"||typeof n.id=="number"?String(n.id):"";t.push({d:h,model:_(n.model)??J,key:m?`${a}:${m}`:null,in:p-r+s,out:g,cr:r,cw:0,cw1h:0,think:W})}return t}var E=["in","out","cr","cw","cw1h","think"],Y=[...E,"n"],ue=["claude","codex","gemini"];function ae(){let e=new Set,t=new Map,c={records:0,duplicates:0,files:0};function u(a,n){if(!n)return!1;if(n.key){let p=`${a}|${n.key}`;if(e.has(p))return c.duplicates++,!1;e.add(p)}let o=`${n.d}|${a}|${n.model}`,h=t.get(o);h||(h={d:n.d,tool:a,model:n.model,in:0,out:0,cr:0,cw:0,cw1h:0,think:0,n:0},t.set(o,h));for(let p of E)h[p]+=n[p];return h.n+=1,c.records++,!0}return{add:u,addClaudeLine(a){return u("claude",L(a))},addClaudeFile(a){if(c.files++,typeof a=="string")for(let n of a.split(`
@@ -1057,7 +1076,8 @@ function sampleRows() {
   return rows;
 }
 const SAMPLE_NOW = Date.UTC(2026, 10, 23, 12);
-const S = { rows: null, mine: false, list: [], sum: null, mets: null };
+const S = { rows: null, mine: false, mode: 'sample', profileId: null, list: [], sum: null, mets: null };
+const BOOT = window.__TOKENBURN__ && Array.isArray(window.__TOKENBURN__.rows) ? window.__TOKENBURN__ : null;
 const isL = () => innerWidth > 720;
 let wasL = isL();
 const big = n => n >= 1e8 ? { value: Math.round(n / 1e7) / 10, unit: '億' } : n >= 1e4 ? { value: Math.round(n / 1e3) / 10, unit: '萬' } : { value: Math.round(n), unit: '' };
@@ -1073,8 +1093,9 @@ const ICON = {
 function build() {
   const L = isL(); wasL = L; setW(L ? 1200 : 390);
   const s = S.sum, mets = S.mets, M = Object.fromEntries(mets.map(m => [m.id, m])), per = `${ymd(s.firstDay)}–${ymd(s.lastDay)}`;
-  $('src').innerHTML = `<b>${S.mine ? '我的資料' : '範例資料'}</b>`;
-  $('pick').textContent = S.mine ? '回到範例' : '讀取我的紀錄';
+  $('src').innerHTML = `<b>${S.mode === 'profile' ? '公開紀錄' : S.mine ? '我的資料' : '範例資料'}</b>`;
+  $('pick').textContent = S.mode === 'profile' ? '算我的' : S.mine ? '回到範例' : '讀取我的紀錄';
+  $('publish').hidden = S.mode !== 'mine';
   const main = $('main'); let html = '';
   const tk = big(s.totals.tokens);
   setW(L ? 1200 : 390);
@@ -1110,23 +1131,24 @@ function build() {
     S.list.push({ id, api, sp: -1 });
   });
   const pick = ['gpu-days', 'typing', 'laps', 'value'].map(id => M[id]);
+  const shareUrl = S.mode === 'profile' ? `${location.origin}/u/${S.profileId}` : location.origin;
   const text = `我這一年燒掉 ${fmt(tk.value)} ${tk.unit} tokens。${pick[0].title} ${fmt(pick[0].value)} ${pick[0].unit}，${pick[1].title} ${fmt(pick[1].value)} ${pick[1].unit}`;
-  html += `<section class="end"><div class="card"><h3>Tokenburn</h3><div class="per">${S.mine ? '' : '範例資料　'}${per}　${fmt(tk.value)} ${tk.unit} tokens</div><ul>${pick.map(m => `<li><svg viewBox="0 0 44 44" aria-hidden="true">${ICON[m.id]}</svg><span>${esc(m.title)}</span><b>${fmt(m.value)}<em>${m.unit}</em></b></li>`).join('')}</ul></div>
-    <div class="acts"><a class="btn em" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}">分享到 X</a><a class="btn" target="_blank" rel="noopener" href="https://www.threads.net/intent/post?text=${encodeURIComponent(text)}">分享到 Threads</a><button class="btn" type="button" id="copy">複製文字</button></div>
+  html += `<section class="end"><div class="card"><h3>Tokenburn</h3><div class="per">${S.mode === 'sample' ? '範例資料　' : ''}${per}　${fmt(tk.value)} ${tk.unit} tokens</div><ul>${pick.map(m => `<li><svg viewBox="0 0 44 44" aria-hidden="true">${ICON[m.id]}</svg><span>${esc(m.title)}</span><b>${fmt(m.value)}<em>${m.unit}</em></b></li>`).join('')}</ul></div>
+    <div class="acts"><a class="btn em" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}">分享到 X</a><a class="btn" target="_blank" rel="noopener" href="https://www.threads.net/intent/post?text=${encodeURIComponent(text + ' ' + shareUrl)}">分享到 Threads</a><button class="btn" type="button" id="copy">複製文字</button></div>
     <details class="algo"><summary>算法</summary><dl>${ORDER.map(id => M[id]).filter(Boolean).map(m => `<dt>${esc(m.title)} ${fmt(m.value)} ${m.unit}${m.estimate ? '（估算）' : ''}</dt><dd>${esc(m.formula)}。${esc(m.note)}</dd>`).join('')}</dl></details></section>`;
   main.innerHTML = html;
   if (flame) { try { flame.destroy(); } catch (e) {} flame = null; }
   const fc = $('flame');
   if (fc && !reduce && window.PyroFX && PyroFX.supported()) { try { flame = PyroFX.fire(fc, { quality: 'low' }); if (flame) flame.setHeat(.62); } catch (e) { flame = null; } }
   S.list.forEach(sc => { sc.el = main.querySelector(`.sc[data-id="${sc.id}"]`); sc.root = sc.el.querySelector('svg'); });
-  $('copy').onclick = () => { (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => say('已複製'), () => say('無法複製')); };
+  $('copy').onclick = () => { (navigator.clipboard ? navigator.clipboard.writeText(text + ' ' + shareUrl) : Promise.reject()).then(() => say('已複製'), () => say('無法複製')); };
   S.intro = null;
   tw0.set(1, false); en0.set(0, .3);
   S.ifans = main.querySelectorAll('.intro .fan'); S.mix = mixOf(s);
 }
-function load(rows, mine) {
-  S.rows = rows; S.mine = mine;
-  S.sum = C.computeSummary(rows, { now: mine ? Date.now() : SAMPLE_NOW });
+function load(rows, mine, mode) {
+  S.rows = rows; S.mine = !!mine; S.mode = mode || (mine ? 'mine' : 'sample');
+  S.sum = C.computeSummary(rows, { now: S.mode === 'sample' ? SAMPLE_NOW : Date.now() });
   S.mets = C.computeMetaphors(S.sum);
   build();
 }
@@ -1190,7 +1212,50 @@ async function ingest(files) {
   scrollTo({ top: 0 }); if (ink) ink.reset(); load(rows, true);
 }
 const dir = $('dir');
-$('pick').onclick = () => { if (S.mine) { scrollTo({ top: 0 }); load(sampleRows(), false); } else dir.click(); };
+$('pick').onclick = () => { if (S.mode === 'profile') { location.href = '/'; return; } if (S.mine) { scrollTo({ top: 0 }); load(sampleRows(), false); } else dir.click(); };
+
+// ---------- Publishing: only daily per-model numbers leave the browser ----------
+const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+function deviceId() {
+  let d = store.get('tokenburn:device');
+  if (!d || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(d)) { d = crypto.randomUUID(); store.set('tokenburn:device', d); }
+  return d;
+}
+const sheet = $('sheet');
+$('publish').onclick = () => {
+  const s = S.sum;
+  $('sheet-p').textContent = `${S.rows.length.toLocaleString('en-US')} 筆數字，${ymd(s.firstDay)}–${ymd(s.lastDay)}`;
+  sheet.hidden = false; $('sheet-ok').focus();
+};
+$('sheet-no').onclick = () => { sheet.hidden = true; };
+sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
+addEventListener('keydown', e => { if (e.key === 'Escape' && !sheet.hidden) sheet.hidden = true; });
+async function api(path, body, token) {
+  const r = await fetch(path, { method: 'POST', headers: { 'content-type': 'application/json', ...(token ? { authorization: 'Bearer ' + token } : {}) }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(j.error || 'HTTP ' + r.status), { status: r.status });
+  return j;
+}
+$('sheet-ok').onclick = async () => {
+  const ok = $('sheet-ok'); ok.disabled = true; ok.textContent = '上傳中';
+  try {
+    let cred = null; try { cred = JSON.parse(store.get('tokenburn:profile') || 'null'); } catch (e) {}
+    const rows = S.rows.map(r => ({ d: r.d, tool: r.tool, model: r.model, in: r.in, out: r.out, cr: r.cr, cw: r.cw, cw1h: r.cw1h, think: r.think, n: r.n }));
+    const payload = { v: 1, client: 'web/0.1.0', deviceId: deviceId(), tz: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', rows };
+    let res;
+    try { if (!cred) throw Object.assign(new Error('no profile'), { status: 401 }); res = await api('/api/v1/ingest', payload, cred.claimToken); }
+    catch (e) {
+      if (e.status !== 401) throw e;
+      cred = await api('/api/v1/profiles', {});
+      store.set('tokenburn:profile', JSON.stringify(cred));
+      res = await api('/api/v1/ingest', payload, cred.claimToken);
+    }
+    location.href = res.url || `/u/${cred.id}`;
+  } catch (e) {
+    say(e.status === 429 ? '上傳太頻繁，請稍後再試' : '上傳失敗，請稍後再試');
+    ok.disabled = false; ok.textContent = '上傳並產生網址';
+  }
+};
 dir.onchange = () => { if (dir.files.length) ingest([...dir.files]); dir.value = ''; };
 async function walk(e, pre, out) {
   if (e.isFile) await new Promise(res => e.file(f => { f._path = pre + f.name; out.push(f); res(); }, res));
@@ -1203,7 +1268,7 @@ addEventListener('drop', async e => { e.preventDefault(); const it = [...(e.data
 let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (isL() !== wasL) build(); if (ink) ink.resize(); }, 150); });
 
 window.__pyro = { load, sampleRows };  // test hook: load(rows, mine)
-load(sampleRows(), false);
+if (BOOT) { S.profileId = BOOT.id; load(BOOT.rows, false, 'profile'); } else load(sampleRows(), false);
 requestAnimationFrame(frame);
 })();
 

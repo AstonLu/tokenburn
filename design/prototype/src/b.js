@@ -25,7 +25,8 @@ function sampleRows() {
   return rows;
 }
 const SAMPLE_NOW = Date.UTC(2026, 10, 23, 12);
-const S = { rows: null, mine: false, list: [], sum: null, mets: null };
+const S = { rows: null, mine: false, mode: 'sample', profileId: null, list: [], sum: null, mets: null };
+const BOOT = window.__TOKENBURN__ && Array.isArray(window.__TOKENBURN__.rows) ? window.__TOKENBURN__ : null;
 const isL = () => innerWidth > 720;
 let wasL = isL();
 const big = n => n >= 1e8 ? { value: Math.round(n / 1e7) / 10, unit: '億' } : n >= 1e4 ? { value: Math.round(n / 1e3) / 10, unit: '萬' } : { value: Math.round(n), unit: '' };
@@ -41,8 +42,9 @@ const ICON = {
 function build() {
   const L = isL(); wasL = L; setW(L ? 1200 : 390);
   const s = S.sum, mets = S.mets, M = Object.fromEntries(mets.map(m => [m.id, m])), per = `${ymd(s.firstDay)}–${ymd(s.lastDay)}`;
-  $('src').innerHTML = `<b>${S.mine ? '我的資料' : '範例資料'}</b>`;
-  $('pick').textContent = S.mine ? '回到範例' : '讀取我的紀錄';
+  $('src').innerHTML = `<b>${S.mode === 'profile' ? '公開紀錄' : S.mine ? '我的資料' : '範例資料'}</b>`;
+  $('pick').textContent = S.mode === 'profile' ? '算我的' : S.mine ? '回到範例' : '讀取我的紀錄';
+  $('publish').hidden = S.mode !== 'mine';
   const main = $('main'); let html = '';
   const tk = big(s.totals.tokens);
   setW(L ? 1200 : 390);
@@ -78,23 +80,24 @@ function build() {
     S.list.push({ id, api, sp: -1 });
   });
   const pick = ['gpu-days', 'typing', 'laps', 'value'].map(id => M[id]);
+  const shareUrl = S.mode === 'profile' ? `${location.origin}/u/${S.profileId}` : location.origin;
   const text = `我這一年燒掉 ${fmt(tk.value)} ${tk.unit} tokens。${pick[0].title} ${fmt(pick[0].value)} ${pick[0].unit}，${pick[1].title} ${fmt(pick[1].value)} ${pick[1].unit}`;
-  html += `<section class="end"><div class="card"><h3>Tokenburn</h3><div class="per">${S.mine ? '' : '範例資料　'}${per}　${fmt(tk.value)} ${tk.unit} tokens</div><ul>${pick.map(m => `<li><svg viewBox="0 0 44 44" aria-hidden="true">${ICON[m.id]}</svg><span>${esc(m.title)}</span><b>${fmt(m.value)}<em>${m.unit}</em></b></li>`).join('')}</ul></div>
-    <div class="acts"><a class="btn em" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}">分享到 X</a><a class="btn" target="_blank" rel="noopener" href="https://www.threads.net/intent/post?text=${encodeURIComponent(text)}">分享到 Threads</a><button class="btn" type="button" id="copy">複製文字</button></div>
+  html += `<section class="end"><div class="card"><h3>Tokenburn</h3><div class="per">${S.mode === 'sample' ? '範例資料　' : ''}${per}　${fmt(tk.value)} ${tk.unit} tokens</div><ul>${pick.map(m => `<li><svg viewBox="0 0 44 44" aria-hidden="true">${ICON[m.id]}</svg><span>${esc(m.title)}</span><b>${fmt(m.value)}<em>${m.unit}</em></b></li>`).join('')}</ul></div>
+    <div class="acts"><a class="btn em" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}">分享到 X</a><a class="btn" target="_blank" rel="noopener" href="https://www.threads.net/intent/post?text=${encodeURIComponent(text + ' ' + shareUrl)}">分享到 Threads</a><button class="btn" type="button" id="copy">複製文字</button></div>
     <details class="algo"><summary>算法</summary><dl>${ORDER.map(id => M[id]).filter(Boolean).map(m => `<dt>${esc(m.title)} ${fmt(m.value)} ${m.unit}${m.estimate ? '（估算）' : ''}</dt><dd>${esc(m.formula)}。${esc(m.note)}</dd>`).join('')}</dl></details></section>`;
   main.innerHTML = html;
   if (flame) { try { flame.destroy(); } catch (e) {} flame = null; }
   const fc = $('flame');
   if (fc && !reduce && window.PyroFX && PyroFX.supported()) { try { flame = PyroFX.fire(fc, { quality: 'low' }); if (flame) flame.setHeat(.62); } catch (e) { flame = null; } }
   S.list.forEach(sc => { sc.el = main.querySelector(`.sc[data-id="${sc.id}"]`); sc.root = sc.el.querySelector('svg'); });
-  $('copy').onclick = () => { (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => say('已複製'), () => say('無法複製')); };
+  $('copy').onclick = () => { (navigator.clipboard ? navigator.clipboard.writeText(text + ' ' + shareUrl) : Promise.reject()).then(() => say('已複製'), () => say('無法複製')); };
   S.intro = null;
   tw0.set(1, false); en0.set(0, .3);
   S.ifans = main.querySelectorAll('.intro .fan'); S.mix = mixOf(s);
 }
-function load(rows, mine) {
-  S.rows = rows; S.mine = mine;
-  S.sum = C.computeSummary(rows, { now: mine ? Date.now() : SAMPLE_NOW });
+function load(rows, mine, mode) {
+  S.rows = rows; S.mine = !!mine; S.mode = mode || (mine ? 'mine' : 'sample');
+  S.sum = C.computeSummary(rows, { now: S.mode === 'sample' ? SAMPLE_NOW : Date.now() });
   S.mets = C.computeMetaphors(S.sum);
   build();
 }
@@ -158,7 +161,50 @@ async function ingest(files) {
   scrollTo({ top: 0 }); if (ink) ink.reset(); load(rows, true);
 }
 const dir = $('dir');
-$('pick').onclick = () => { if (S.mine) { scrollTo({ top: 0 }); load(sampleRows(), false); } else dir.click(); };
+$('pick').onclick = () => { if (S.mode === 'profile') { location.href = '/'; return; } if (S.mine) { scrollTo({ top: 0 }); load(sampleRows(), false); } else dir.click(); };
+
+// ---------- Publishing: only daily per-model numbers leave the browser ----------
+const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+function deviceId() {
+  let d = store.get('tokenburn:device');
+  if (!d || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(d)) { d = crypto.randomUUID(); store.set('tokenburn:device', d); }
+  return d;
+}
+const sheet = $('sheet');
+$('publish').onclick = () => {
+  const s = S.sum;
+  $('sheet-p').textContent = `${S.rows.length.toLocaleString('en-US')} 筆數字，${ymd(s.firstDay)}–${ymd(s.lastDay)}`;
+  sheet.hidden = false; $('sheet-ok').focus();
+};
+$('sheet-no').onclick = () => { sheet.hidden = true; };
+sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
+addEventListener('keydown', e => { if (e.key === 'Escape' && !sheet.hidden) sheet.hidden = true; });
+async function api(path, body, token) {
+  const r = await fetch(path, { method: 'POST', headers: { 'content-type': 'application/json', ...(token ? { authorization: 'Bearer ' + token } : {}) }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(j.error || 'HTTP ' + r.status), { status: r.status });
+  return j;
+}
+$('sheet-ok').onclick = async () => {
+  const ok = $('sheet-ok'); ok.disabled = true; ok.textContent = '上傳中';
+  try {
+    let cred = null; try { cred = JSON.parse(store.get('tokenburn:profile') || 'null'); } catch (e) {}
+    const rows = S.rows.map(r => ({ d: r.d, tool: r.tool, model: r.model, in: r.in, out: r.out, cr: r.cr, cw: r.cw, cw1h: r.cw1h, think: r.think, n: r.n }));
+    const payload = { v: 1, client: 'web/0.1.0', deviceId: deviceId(), tz: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', rows };
+    let res;
+    try { if (!cred) throw Object.assign(new Error('no profile'), { status: 401 }); res = await api('/api/v1/ingest', payload, cred.claimToken); }
+    catch (e) {
+      if (e.status !== 401) throw e;
+      cred = await api('/api/v1/profiles', {});
+      store.set('tokenburn:profile', JSON.stringify(cred));
+      res = await api('/api/v1/ingest', payload, cred.claimToken);
+    }
+    location.href = res.url || `/u/${cred.id}`;
+  } catch (e) {
+    say(e.status === 429 ? '上傳太頻繁，請稍後再試' : '上傳失敗，請稍後再試');
+    ok.disabled = false; ok.textContent = '上傳並產生網址';
+  }
+};
 dir.onchange = () => { if (dir.files.length) ingest([...dir.files]); dir.value = ''; };
 async function walk(e, pre, out) {
   if (e.isFile) await new Promise(res => e.file(f => { f._path = pre + f.name; out.push(f); res(); }, res));
@@ -171,6 +217,6 @@ addEventListener('drop', async e => { e.preventDefault(); const it = [...(e.data
 let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (isL() !== wasL) build(); if (ink) ink.resize(); }, 150); });
 
 window.__pyro = { load, sampleRows };  // test hook: load(rows, mine)
-load(sampleRows(), false);
+if (BOOT) { S.profileId = BOOT.id; load(BOOT.rows, false, 'profile'); } else load(sampleRows(), false);
 requestAnimationFrame(frame);
 })();
