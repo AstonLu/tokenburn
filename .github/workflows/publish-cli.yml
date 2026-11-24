@@ -35,4 +35,8 @@ jobs:
         run: pnpm pack --pack-destination "$RUNNER_TEMP" && ls "$RUNNER_TEMP"/*.tgz
       - name: Publish with OIDC
         if: steps.check.outputs.skip != 'true'
-        run: npm publish "$RUNNER_TEMP"/*.tgz --access public --registry https://registry.npmjs.org/
+        run: |
+          mkdir -p "$RUNNER_TEMP/pkg" && tar -xzf "$RUNNER_TEMP"/*.tgz -C "$RUNNER_TEMP/pkg"
+          cd "$RUNNER_TEMP/pkg/package"
+          npm publish --access public --registry https://registry.npmjs.org/ --loglevel verbose 2>&1 | grep -viE "^npm (sill|silly)" | tail -40
+          exit ${PIPESTATUS[0]}
