@@ -186,8 +186,20 @@ const dir = $('dir');
 // ---------- How to get your own numbers ----------
 const how = $('how');
 const ORIGIN = /^https?:$/.test(location.protocol) ? location.origin : 'https://tokenburn.astonlu.com';
-$('how-ai').textContent = `請在終端機執行下面這行指令，完成後把它印出的網址打開給我：curl -fsSL ${ORIGIN}/cli.mjs -o /tmp/tokenburn.mjs && node /tmp/tokenburn.mjs --yes --open`;
-$('how-cli').textContent = `curl -fsSL ${ORIGIN}/cli.mjs -o /tmp/tokenburn.mjs && node /tmp/tokenburn.mjs --open`;
+const CMD = {
+  mac: `curl -fsSL ${ORIGIN}/cli.mjs -o /tmp/tokenburn.mjs && node /tmp/tokenburn.mjs --open`,
+  win: `irm ${ORIGIN}/cli.mjs -OutFile "$env:TEMP\\tokenburn.mjs"; node "$env:TEMP\\tokenburn.mjs" --open`,
+};
+const OPEN = { mac: '按 ⌘ 空白鍵，輸入 Terminal 打開終端機，貼上後按 Enter，確認內容再按 Y', win: '按開始，輸入 PowerShell 打開，貼上後按 Enter，確認內容再按 Y' };
+$('how-ai').textContent = `請在終端機執行下面的指令，完成後把它印出的網址打開給我。Mac 或 Linux：${CMD.mac.replace(' --open', ' --yes --open')}　Windows（PowerShell）：${CMD.win.replace(' --open', ' --yes --open')}`;
+function setOS(os) {
+  $('os-mac').setAttribute('aria-selected', os === 'mac'); $('os-win').setAttribute('aria-selected', os === 'win');
+  $('how-cli').textContent = CMD[os]; $('how-open').textContent = OPEN[os];
+}
+$('os-mac').onclick = () => setOS('mac'); $('os-win').onclick = () => setOS('win');
+const IS_WIN = /Windows/.test(navigator.userAgent);
+setOS(IS_WIN ? 'win' : 'mac');
+if (IS_WIN) { $('how-path').textContent = '%USERPROFILE%\\.claude\\projects'; $('how-pathhint').textContent = '在選資料夾視窗上方的路徑列貼上這個路徑，按 Enter。只在你的瀏覽器裡計算'; }
 function openHow() { how.hidden = false; how.querySelector('[data-copy="how-ai"]').focus(); }
 function closeHow() { how.hidden = true; }
 $('how-close').onclick = closeHow;
