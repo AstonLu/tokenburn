@@ -7,3 +7,4 @@ export { PRICING, PRICING_FALLBACKS, PRICING_META, priceOf, resolvePrice } from 
 export { computeSummary } from './summary.js';
 export { TITLE_RULES, computeTitles, RATIO_MIN_TOKENS } from './titles.js';
 export { MODEL_RE, normModel, utcDay, toInt } from './util.js';
+export { computeMetaphors, humanDuration, ASSUMPTIONS } from './metaphors.js';
