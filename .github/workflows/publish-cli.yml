@@ -1,9 +1,9 @@
 name: Publish CLI to npm
-# Runs when a tag like cli-v0.1.0 is pushed, or by hand from the Actions tab.
+# Runs when the release-cli branch is pushed (point it at the commit to release), or by hand from the Actions tab.
 # Needs the repository secret NPM_TOKEN (an npm granular token with read and write on packages).
 on:
   push:
-    tags: ['cli-v*']
+    branches: [release-cli]
   workflow_dispatch:
 permissions:
   contents: read
