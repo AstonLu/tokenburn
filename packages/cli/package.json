@@ -4,9 +4,18 @@
   "description": "Measure the AI tokens you burned in Claude Code, Codex CLI and Gemini CLI. Parses locally, uploads only daily per-model totals.",
   "type": "module",
   "license": "MIT",
-  "bin": { "tokenburn": "bin/tokenburn.js" },
-  "files": ["bin", "src", "vendor"],
-  "engines": { "node": ">=18" },
+  "bin": {
+    "tokenburn": "bin/tokenburn.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "vendor",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "node scripts/vendor-core.mjs",
     "prepare": "node scripts/vendor-core.mjs",
@@ -19,5 +28,19 @@
     "@tokenburn/core": "workspace:*",
     "@types/node": "22.20.5",
     "typescript": "5.9.3"
-  }
+  },
+  "homepage": "https://tokenburn.astonlu.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AstonLu/tokenburn.git",
+    "directory": "packages/cli"
+  },
+  "keywords": [
+    "claude-code",
+    "codex",
+    "gemini-cli",
+    "tokens",
+    "usage",
+    "ai"
+  ]
 }

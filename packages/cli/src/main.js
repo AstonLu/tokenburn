@@ -6,7 +6,7 @@ import { bytes, compact, int, pct, usd } from './format.js';
 import { scanAll } from './scan.js';
 import { CLIENT, VERSION } from './version.js';
 
-const DEFAULT_ENDPOINT = 'http://localhost:3000';
+const DEFAULT_ENDPOINT = 'https://tokenburn.astonlu.com';
 /** Rows per ingest request; keeps each body well under the 2 MB server limit. */
 export const CHUNK_ROWS = 10000;
 const PREVIEW_ROWS = 5;

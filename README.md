@@ -128,7 +128,7 @@ pnpm --filter @tokenburn/site deploy
 pnpm sync-pricing        # or: node scripts/sync-pricing.mjs --from ./model_prices_and_context_window.json
 ```
 
-The CLI accepts these flags: `--dry-run`, `--yes` or `-y`, `--open`, `--json`, `--endpoint <url>`, `--help` and `--version`. The endpoint defaults to `$TOKENBURN_ENDPOINT`, then `http://localhost:3000`. Set `$TOKENBURN_HOME` to use a config directory other than `~/.tokenburn`.
+The CLI accepts these flags: `--dry-run`, `--yes` or `-y`, `--open`, `--json`, `--endpoint <url>`, `--help` and `--version`. The endpoint defaults to `$TOKENBURN_ENDPOINT`, then `https://tokenburn.astonlu.com`. Set `$TOKENBURN_HOME` to use a config directory other than `~/.tokenburn`.
 
 The fixtures in `packages/core/test/fixtures` are synthetic. `generate.mjs` produces them by mimicking the real file structures, and they contain no real transcript content.
 
