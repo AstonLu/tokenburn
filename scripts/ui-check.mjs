@@ -15,7 +15,7 @@ const logs = mkdtempSync(join(tmpdir(), 'tokenburn-ui-logs-'));
 if (existsSync(join(homedir(), '.claude/projects'))) cpSync(join(homedir(), '.claude/projects'), join(logs, 'projects'), { recursive: true });
 
 const fail = (m) => { console.error('UI FAIL', m); process.exit(1); };
-const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'], ...(process.env.HTTPS_PROXY && !/127\.0\.0\.1|localhost/.test(BASE) ? { proxy: { server: process.env.HTTPS_PROXY } } : {}) });
 const errors = [];
 for (const [tag, vp] of [['d', { width: 1440, height: 900 }], ['m', { width: 393, height: 852 }]]) {
   const ctx = await b.newContext({ viewport: vp });

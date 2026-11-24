@@ -5,8 +5,9 @@ import { CreateProfileSchema, MAX_BODY_BYTES, PayloadSchema, PROFILE_ID_RE } fro
 import { hashToken, newClaimToken, newProfileId } from './ids';
 import * as db from './db';
 import { renderOg } from './og';
+import PAGE from '../public/index.html';
 
-export type Env = { DB: D1Database; ASSETS: Fetcher };
+export type Env = { DB: D1Database };
 type C = Context<{ Bindings: Env }>;
 
 const app = new Hono<{ Bindings: Env }>();
@@ -137,13 +138,18 @@ app.get('/api/v1/profiles/:id', async (c) => {
 
 /** GET /u/:id/og.png -> 1200x630 share image. */
 app.get('/u/:id/og.png', async (c) => {
+  const cache = (caches as unknown as { default: Cache }).default;
+  const hit = await cache.match(c.req.raw);
+  if (hit) return hit;
   const p = await loadProfile(c.env, c.req.param('id'));
   if (!p) return c.notFound();
   const img = await renderOg(p.summary, computeMetaphors(p.summary));
   const h = new Headers(img.headers);
   h.set('content-type', 'image/png');
   h.set('cache-control', 'public, max-age=600');
-  return new Response(img.body, { status: img.status, headers: h });
+  const res = new Response(await img.arrayBuffer(), { status: img.status, headers: h });
+  c.executionCtx.waitUntil(cache.put(c.req.raw, res.clone()));
+  return res;
 });
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch] as string);
@@ -153,7 +159,7 @@ const fmtTok = (n: number) => (n >= 1e8 ? `${(n / 1e8).toFixed(1)} 億` : n >= 1
 app.get('/u/:id', async (c) => {
   const id = c.req.param('id');
   const p = await loadProfile(c.env, id);
-  const page = await c.env.ASSETS.fetch(new Request(new URL('/index.html', c.req.url)));
+  const page = new Response(PAGE, { headers: { 'content-type': 'text/html; charset=utf-8' } });
   if (!p) return new Response('找不到這個頁面', { status: 404, headers: { 'content-type': 'text/plain; charset=utf-8' } });
   const origin = new URL(c.req.url).origin;
   const usd = `$${Math.round(p.summary.usdTotal / 100).toLocaleString('en-US')}`;
@@ -171,5 +177,11 @@ app.get('/u/:id', async (c) => {
 });
 
 app.all('/api/*', (c) => err(c, 404, 'not found'));
+
+const HTML_HEADERS = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=0, s-maxage=300' };
+app.get('/', () => new Response(PAGE, { headers: HTML_HEADERS }));
+app.get('/index.html', () => new Response(PAGE, { headers: HTML_HEADERS }));
+app.get('/robots.txt', () => new Response('User-agent: *\nAllow: /\n', { headers: { 'content-type': 'text/plain' } }));
+app.notFound(() => new Response('找不到這個頁面', { status: 404, headers: { 'content-type': 'text/plain; charset=utf-8' } }));
 
 export default app;
