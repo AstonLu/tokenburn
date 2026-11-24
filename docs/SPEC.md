@@ -11,7 +11,7 @@ Tokenburn measures how many AI tokens a person has burned across Claude Code, Op
 
 ## Repo layout (pnpm workspace)
 - `packages/core`   pure parser + aggregation + pricing + titles. Exports `createAggregator()`, `parseClaudeLine`, `parseCodexFile`, `parseGeminiFile`, `priceOf(model, usage)`, `PRICING`.
-- `packages/cli`    `npx tokenburn` : scan, print summary + exact payload, ask Y/n, upload, open browser. Flags: `--yes`, `--open`, `--dry-run`, `--json`, `--endpoint`.
+- `packages/cli`    `npx @astonlu/tokenburn` : scan, print summary + exact payload, ask Y/n, upload, open browser. Flags: `--yes`, `--open`, `--dry-run`, `--json`, `--endpoint`.
 - `apps/site`       Cloudflare Worker (Hono): API routes, the page at `/` and `/u/[id]`, OG image `/u/[id]/og.png`. Static assets via Workers static assets.
 
 ## Log sources

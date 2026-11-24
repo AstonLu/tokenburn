@@ -1,5 +1,5 @@
 {
-  "name": "tokenburn",
+  "name": "@astonlu/tokenburn",
   "version": "0.1.0",
   "description": "Measure the AI tokens you burned in Claude Code, Codex CLI and Gemini CLI. Parses locally, uploads only daily per-model totals.",
   "type": "module",

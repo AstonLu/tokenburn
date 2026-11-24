@@ -15,7 +15,7 @@ const HELP = `tokenburn ${VERSION}
 Measure tokens burned in Claude Code, Codex CLI and Gemini CLI.
 Logs are parsed locally; only daily per-model token totals are uploaded.
 
-Usage: npx tokenburn [options]
+Usage: npx @astonlu/tokenburn [options]
 
   --dry-run          scan and show the payload; never touches the network
   --yes, -y          upload without asking

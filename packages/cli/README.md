@@ -1,9 +1,9 @@
-# tokenburn
+# @astonlu/tokenburn
 
 See how many AI tokens you burned in Claude Code, OpenAI Codex CLI and Gemini CLI, what that is worth at API prices, and get a public page to share.
 
 ```sh
-npx tokenburn
+npx @astonlu/tokenburn
 ```
 
 It scans your local logs, shows you exactly what it would upload, and asks before sending anything. Your page lives at https://tokenburn.astonlu.com.

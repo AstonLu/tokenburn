@@ -1,13 +1,13 @@
 # Tokenburn
 
-Live at **https://tokenburn.astonlu.com**. Run `npx tokenburn` or open the site and pick your `~/.claude/projects` folder.
+Live at **https://tokenburn.astonlu.com**. Run `npx @astonlu/tokenburn` or open the site and pick your `~/.claude/projects` folder.
 
 
 Tokenburn measures how many AI tokens you have burned across **Claude Code**, **OpenAI Codex CLI** and **Gemini CLI**, converts them to the equivalent API price in USD, and publishes a public profile page with an Open Graph share card.
 
 ```
-npx tokenburn            # scan, show exactly what would be sent, ask, upload
-npx tokenburn --dry-run  # scan and show the payload; never touches the network
+npx @astonlu/tokenburn            # scan, show exactly what would be sent, ask, upload
+npx @astonlu/tokenburn --dry-run  # scan and show the payload; never touches the network
 ```
 
 The engineering standard is [`docs/SPEC.md`](docs/SPEC.md).
