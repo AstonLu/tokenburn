@@ -1,4 +1,4 @@
-import { computeSummary } from '@pyrometer/core';
+import { computeSummary } from '@tokenburn/core';
 import { PROFILE_ID_RE } from './schema';
 import { getStore } from './store';
 

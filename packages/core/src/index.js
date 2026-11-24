@@ -1,4 +1,4 @@
-// @pyrometer/core public API. Pure ESM, no Node built-ins: IO is injected by callers.
+// @tokenburn/core public API. Pure ESM, no Node built-ins: IO is injected by callers.
 export { parseClaudeLine } from './claude.js';
 export { parseCodexFile, CODEX_UNKNOWN_MODEL } from './codex.js';
 export { parseGeminiFile, GEMINI_UNKNOWN_MODEL } from './gemini.js';

@@ -5,7 +5,7 @@
 //   lb:usd     zset   leaderboard, score = usd total in cents
 //   tk:{hash}  string claim-token hash -> profile id (lookup index for ingest)
 //   rl:{...}   string fixed-window rate limit counters
-import { mergeRowMax } from '@pyrometer/core';
+import { mergeRowMax } from '@tokenburn/core';
 
 export const ROW_FIELDS = ['in', 'out', 'cr', 'cw', 'cw1h', 'think', 'n'] as const;
 type Counts = Record<(typeof ROW_FIELDS)[number], number>;
@@ -65,8 +65,8 @@ type Mem = {
 };
 
 function memoryStore(): Store {
-  const g = globalThis as unknown as { __pyrometerMem?: Mem };
-  const mem = (g.__pyrometerMem ??= { profiles: new Map(), tokens: new Map(), rows: new Map(), lb: new Map(), rl: new Map() });
+  const g = globalThis as unknown as { __tokenburnMem?: Mem };
+  const mem = (g.__tokenburnMem ??= { profiles: new Map(), tokens: new Map(), rows: new Map(), lb: new Map(), rl: new Map() });
   return {
     kind: 'memory',
     async createProfile(id, claimHash) {
@@ -212,7 +212,7 @@ export function getStore(): Store {
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
   if (url && token) return (cached = upstashStore(url, token));
-  if (process.env.NODE_ENV === 'production' && process.env.PYROMETER_ALLOW_MEMORY_STORE !== '1') {
+  if (process.env.NODE_ENV === 'production' && process.env.TOKENBURN_ALLOW_MEMORY_STORE !== '1') {
     throw new StoreUnavailableError('storage not configured (set UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN)');
   }
   return (cached = memoryStore());

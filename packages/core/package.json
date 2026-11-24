@@ -1,7 +1,7 @@
 {
-  "name": "@pyrometer/core",
+  "name": "@tokenburn/core",
   "version": "0.1.0",
-  "description": "Pyrometer shared parser, aggregation, pricing and titles. Pure ESM, no Node built-ins.",
+  "description": "Tokenburn shared parser, aggregation, pricing and titles. Pure ESM, no Node built-ins.",
   "type": "module",
   "license": "MIT",
   "main": "./src/index.js",

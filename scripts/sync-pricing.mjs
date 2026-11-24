@@ -34,7 +34,7 @@ async function fromGithub() {
 
 function fromPypi() {
   // Fresh empty scratch dir; the wheel is only unzipped for one JSON member, read as data.
-  const dir = mkdtempSync(join(tmpdir(), 'pyrometer-litellm-'));
+  const dir = mkdtempSync(join(tmpdir(), 'tokenburn-litellm-'));
   try {
     execFileSync('pip', ['download', 'litellm', '--no-deps', '--only-binary=:all:', '-d', dir], { stdio: 'inherit' });
     const wheel = readdirSync(dir).find((f) => f.endsWith('.whl'));

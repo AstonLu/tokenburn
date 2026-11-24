@@ -10,7 +10,7 @@ importers:
 
   apps/web:
     dependencies:
-      '@pyrometer/core':
+      '@tokenburn/core':
         specifier: workspace:*
         version: link:../../packages/core
       next:
@@ -41,7 +41,7 @@ importers:
 
   packages/cli:
     devDependencies:
-      '@pyrometer/core':
+      '@tokenburn/core':
         specifier: workspace:*
         version: link:../core
       '@types/node':

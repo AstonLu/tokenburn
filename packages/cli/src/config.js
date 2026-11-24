@@ -6,7 +6,7 @@ import { join } from 'node:path';
 /** @typedef {{ id: string, claimToken: string, deviceId: string }} Config */
 
 export function configDir(env = process.env) {
-  return env.PYROMETER_HOME || join(homedir(), '.pyrometer');
+  return env.TOKENBURN_HOME || join(homedir(), '.tokenburn');
 }
 export function configPath(env = process.env) {
   return join(configDir(env), 'config.json');

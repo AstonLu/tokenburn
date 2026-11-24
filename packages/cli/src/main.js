@@ -11,21 +11,21 @@ const DEFAULT_ENDPOINT = 'http://localhost:3000';
 export const CHUNK_ROWS = 10000;
 const PREVIEW_ROWS = 5;
 
-const HELP = `pyrometer ${VERSION}
+const HELP = `tokenburn ${VERSION}
 Measure tokens burned in Claude Code, Codex CLI and Gemini CLI.
 Logs are parsed locally; only daily per-model token totals are uploaded.
 
-Usage: npx pyrometer [options]
+Usage: npx tokenburn [options]
 
   --dry-run          scan and show the payload; never touches the network
   --yes, -y          upload without asking
   --open             open the profile page in a browser after upload
   --json             print the full payload JSON on stdout (human output goes to stderr)
-  --endpoint <url>   server (default: $PYROMETER_ENDPOINT or ${DEFAULT_ENDPOINT})
+  --endpoint <url>   server (default: $TOKENBURN_ENDPOINT or ${DEFAULT_ENDPOINT})
   --help, -h         show this help
   --version, -v      show version
 
-Config: ~/.pyrometer/config.json (override dir with $PYROMETER_HOME)`;
+Config: ~/.tokenburn/config.json (override dir with $TOKENBURN_HOME)`;
 
 /**
  * @typedef {{ dryRun: boolean, yes: boolean, open: boolean, json: boolean, endpoint: string | null, help: boolean, version: boolean }} Flags
@@ -114,7 +114,7 @@ export function previewPayload(payload) {
 export function formatSummary(s, counts) {
   const t = s.totals;
   const name = { claude: 'Claude Code', codex: 'Codex CLI  ', gemini: 'Gemini CLI ' };
-  const lines = [`Pyrometer ${VERSION}: local scan`];
+  const lines = [`Tokenburn ${VERSION}: local scan`];
   for (const tool of /** @type {const} */ (['claude', 'codex', 'gemini'])) {
     const c = counts[tool];
     const dup = c.duplicates ? ` (${int(c.duplicates)} duplicate lines skipped)` : '';
@@ -158,7 +158,7 @@ async function confirm(question) {
  */
 async function api(url, opts = {}) {
   /** @type {Record<string, string>} */
-  const headers = { 'content-type': 'application/json', 'user-agent': `pyrometer/${VERSION}` };
+  const headers = { 'content-type': 'application/json', 'user-agent': `tokenburn/${VERSION}` };
   if (opts.token) headers.authorization = `Bearer ${opts.token}`;
   const res = await fetch(url, {
     method: opts.method ?? 'POST',
@@ -209,7 +209,7 @@ export async function main(argv, deps = {}) {
   if (flags.help) return out(HELP), 0;
   if (flags.version) return out(VERSION), 0;
 
-  const endpoint = normalizeEndpoint(flags.endpoint || env.PYROMETER_ENDPOINT || DEFAULT_ENDPOINT);
+  const endpoint = normalizeEndpoint(flags.endpoint || env.TOKENBURN_ENDPOINT || DEFAULT_ENDPOINT);
   const config = await loadConfig(env);
   const deviceId = config ? config.deviceId : newDeviceId();
 

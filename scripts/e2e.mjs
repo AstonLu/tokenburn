@@ -2,7 +2,7 @@
 // End-to-end check: start the built web app (in-memory store), upload this machine's real
 // logs with the CLI, read the Summary back and compare it with the CLI's dry-run numbers.
 //
-//   pnpm --filter @pyrometer/web build && node scripts/e2e.mjs
+//   pnpm --filter @tokenburn/web build && node scripts/e2e.mjs
 //
 // The real logs are snapshotted into a temporary HOME first so that a session that is still
 // writing its transcript cannot make the two runs disagree. The snapshot is deleted afterwards.
@@ -16,13 +16,13 @@ import { fileURLToPath } from 'node:url';
 import { computeSummary } from '../packages/core/src/index.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const CLI = join(ROOT, 'packages/cli/bin/pyrometer.js');
+const CLI = join(ROOT, 'packages/cli/bin/tokenburn.js');
 const WEB = join(ROOT, 'apps/web');
 const PORT = Number(process.env.E2E_PORT || 3217);
 const BASE = `http://127.0.0.1:${PORT}`;
 
 function snapshotHome() {
-  const home = mkdtempSync(join(tmpdir(), 'pyrometer-e2e-home-'));
+  const home = mkdtempSync(join(tmpdir(), 'tokenburn-e2e-home-'));
   const real = homedir();
   for (const rel of ['.claude/projects', '.config/claude/projects', '.codex/sessions', '.gemini/tmp']) {
     if (existsSync(join(real, rel))) cpSync(join(real, rel), join(home, rel), { recursive: true });
@@ -57,12 +57,12 @@ const post = (path, body, headers = {}) =>
 async function main() {
   const server = spawn(process.execPath, [join(WEB, 'node_modules/next/dist/bin/next'), 'start', '-p', String(PORT), '-H', '127.0.0.1'], {
     cwd: WEB,
-    env: { ...process.env, PYROMETER_ALLOW_MEMORY_STORE: '1', UPSTASH_REDIS_REST_URL: '', UPSTASH_REDIS_REST_TOKEN: '', NEXT_TELEMETRY_DISABLED: '1' },
+    env: { ...process.env, TOKENBURN_ALLOW_MEMORY_STORE: '1', UPSTASH_REDIS_REST_URL: '', UPSTASH_REDIS_REST_TOKEN: '', NEXT_TELEMETRY_DISABLED: '1' },
     stdio: ['ignore', 'ignore', 'inherit'],
   });
   const home = snapshotHome();
-  const pyHome = mkdtempSync(join(tmpdir(), 'pyrometer-e2e-cfg-'));
-  const env = { HOME: home, PYROMETER_HOME: pyHome, PYROMETER_ENDPOINT: BASE };
+  const pyHome = mkdtempSync(join(tmpdir(), 'tokenburn-e2e-cfg-'));
+  const env = { HOME: home, TOKENBURN_HOME: pyHome, TOKENBURN_ENDPOINT: BASE };
   try {
     await waitFor(BASE + '/api/v1/profiles/aaaaaaaa');
 

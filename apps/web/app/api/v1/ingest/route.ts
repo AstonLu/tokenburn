@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { computeSummary } from '@pyrometer/core';
+import { computeSummary } from '@tokenburn/core';
 import { hashToken, safeEqualHex } from '@/lib/ids';
 import { BodyTooLargeError, handle, jsonError, rateLimit, readBodyCapped } from '@/lib/http';
 import { MAX_BODY_BYTES, PayloadSchema } from '@/lib/schema';

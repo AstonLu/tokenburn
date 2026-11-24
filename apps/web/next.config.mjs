@@ -5,7 +5,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@pyrometer/core'],
+  transpilePackages: ['@tokenburn/core'],
   outputFileTracingRoot: join(here, '../..'),
   poweredByHeader: false,
 };

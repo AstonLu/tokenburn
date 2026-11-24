@@ -10,12 +10,12 @@ import { buildPayload, normalizeEndpoint, parseArgs } from '../src/main.js';
 import { VERSION } from '../src/version.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const BIN = join(HERE, '../bin/pyrometer.js');
+const BIN = join(HERE, '../bin/tokenburn.js');
 const FIX = join(HERE, '../../core/test/fixtures');
 
 /** A fake HOME holding the synthetic Claude, Codex and Gemini fixtures. */
 function fakeHome() {
-  const home = mkdtempSync(join(tmpdir(), 'pyrometer-home-'));
+  const home = mkdtempSync(join(tmpdir(), 'tokenburn-home-'));
   cpSync(join(FIX, 'claude/projects'), join(home, '.claude/projects'), { recursive: true });
   cpSync(join(FIX, 'codex/sessions'), join(home, '.codex/sessions'), { recursive: true });
   cpSync(join(FIX, 'gemini/tmp'), join(home, '.gemini/tmp'), { recursive: true });
@@ -75,7 +75,7 @@ test('--dry-run scans fixtures and never touches the network', async () => {
   const srv = await fakeServer();
   const home = fakeHome();
   try {
-    const r = /** @type {any} */ (await run(['--dry-run', '--json'], { HOME: home, PYROMETER_ENDPOINT: srv.url }));
+    const r = /** @type {any} */ (await run(['--dry-run', '--json'], { HOME: home, TOKENBURN_ENDPOINT: srv.url }));
     assert.equal(r.code, 0, r.stderr);
     assert.equal(srv.hits.length, 0);
     const payload = JSON.parse(r.stdout);
@@ -94,9 +94,9 @@ test('--dry-run scans fixtures and never touches the network', async () => {
 test('--yes creates a profile, saves config (0600), uploads, prints URL last', async () => {
   const srv = await fakeServer();
   const home = fakeHome();
-  const pyHome = join(home, '.pyrometer');
+  const pyHome = join(home, '.tokenburn');
   try {
-    const r = /** @type {any} */ (await run(['--yes'], { HOME: home, PYROMETER_ENDPOINT: srv.url }));
+    const r = /** @type {any} */ (await run(['--yes'], { HOME: home, TOKENBURN_ENDPOINT: srv.url }));
     assert.equal(r.code, 0, r.stderr);
     assert.deepEqual(srv.hits.map((h) => h.url), ['/api/v1/profiles', '/api/v1/ingest']);
     const cfg = JSON.parse(readFileSync(join(pyHome, 'config.json'), 'utf8'));
@@ -109,7 +109,7 @@ test('--yes creates a profile, saves config (0600), uploads, prints URL last', a
     assert.match(r.stdout, /rows: \d+ {3}dates: 2026-11-20 \.\. 2026-11-22/);
 
     // second run reuses the profile: no new profile request
-    const r2 = /** @type {any} */ (await run(['--yes'], { HOME: home, PYROMETER_ENDPOINT: srv.url }));
+    const r2 = /** @type {any} */ (await run(['--yes'], { HOME: home, TOKENBURN_ENDPOINT: srv.url }));
     assert.equal(r2.code, 0, r2.stderr);
     assert.deepEqual(srv.hits.map((h) => h.url).slice(2), ['/api/v1/ingest']);
   } finally {
@@ -120,10 +120,10 @@ test('--yes creates a profile, saves config (0600), uploads, prints URL last', a
 test('without --yes and no TTY, EOF on stdin means no upload', async () => {
   const srv = await fakeServer();
   try {
-    const r = /** @type {any} */ (await run([], { HOME: fakeHome(), PYROMETER_ENDPOINT: srv.url }, ''));
+    const r = /** @type {any} */ (await run([], { HOME: fakeHome(), TOKENBURN_ENDPOINT: srv.url }, ''));
     assert.equal(r.code, 1);
     assert.equal(srv.hits.length, 0);
-    const r2 = /** @type {any} */ (await run([], { HOME: fakeHome(), PYROMETER_ENDPOINT: srv.url }, 'y\n'));
+    const r2 = /** @type {any} */ (await run([], { HOME: fakeHome(), TOKENBURN_ENDPOINT: srv.url }, 'y\n'));
     assert.equal(r2.code, 0, r2.stderr);
     assert.equal(srv.hits.length, 2);
   } finally {

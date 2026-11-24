@@ -1,20 +1,20 @@
-# Pyrometer
+# Tokenburn
 
-Pyrometer measures how many AI tokens you have burned across **Claude Code**, **OpenAI Codex CLI** and **Gemini CLI**, converts them to the equivalent API price in USD, and publishes a public profile page with an Open Graph share card.
+Tokenburn measures how many AI tokens you have burned across **Claude Code**, **OpenAI Codex CLI** and **Gemini CLI**, converts them to the equivalent API price in USD, and publishes a public profile page with an Open Graph share card.
 
 ```
-npx pyrometer            # scan, show exactly what would be sent, ask, upload
-npx pyrometer --dry-run  # scan and show the payload; never touches the network
+npx tokenburn            # scan, show exactly what would be sent, ask, upload
+npx tokenburn --dry-run  # scan and show the payload; never touches the network
 ```
 
 The engineering standard is [`docs/SPEC.md`](docs/SPEC.md).
 
 ## Privacy guarantees
 
-- **Logs never leave your machine.** Transcripts are parsed locally by the CLI (or in a browser Web Worker). Pyrometer reads only token counts, model ids and timestamps.
+- **Logs never leave your machine.** Transcripts are parsed locally by the CLI (or in a browser Web Worker). Tokenburn reads only token counts, model ids and timestamps.
 - **Only the Payload is uploaded.** It holds one row per UTC day, tool and model, with integer token counts. It contains **no** file paths, project names, prompts, responses, code, tool calls, session ids or message ids.
 - **You see the exact payload first.** Before anything is sent, the CLI prints the row count, the date range and the first rows of the payload, then asks `[Y/n]`. `--json` prints the full payload. `--dry-run` never opens a network connection.
-- **Your claim token is never stored in plain form.** `POST /api/v1/profiles` returns a random 32-byte claim token once. The server keeps only its SHA-256 hash. The CLI stores the token in `~/.pyrometer/config.json` with mode `600`.
+- **Your claim token is never stored in plain form.** `POST /api/v1/profiles` returns a random 32-byte claim token once. The server keeps only its SHA-256 hash. The CLI stores the token in `~/.tokenburn/config.json` with mode `600`.
 - **The CLI is auditable.** It has zero runtime dependencies and uses Node built-ins only. The parser is shared with the web app (`packages/core`) and is vendored into the CLI at build time.
 
 ### Payload v1 (`POST /api/v1/ingest`)
@@ -100,7 +100,7 @@ All parsers skip unknown shapes and never throw.
 - `tk:{sha256}`: maps a claim-token hash to its profile id
 - `rl:*`: rate-limit counters
 
-If the Upstash variables are unset, an in-memory store is used. That store is for development only: `next start` refuses it unless `PYROMETER_ALLOW_MEMORY_STORE=1` is set.
+If the Upstash variables are unset, an in-memory store is used. That store is for development only: `next start` refuses it unless `TOKENBURN_ALLOW_MEMORY_STORE=1` is set.
 
 ## Running it
 
@@ -114,21 +114,21 @@ pnpm typecheck           # tsc over core JSDoc, cli JSDoc and the web app
 pnpm build               # next build
 
 # web app (in-memory store)
-pnpm --filter @pyrometer/web dev            # http://localhost:3000
+pnpm --filter @tokenburn/web dev            # http://localhost:3000
 
 # CLI against it
-node packages/cli/bin/pyrometer.js --dry-run
-node packages/cli/bin/pyrometer.js --yes --open
-PYROMETER_ENDPOINT=https://example.com node packages/cli/bin/pyrometer.js
+node packages/cli/bin/tokenburn.js --dry-run
+node packages/cli/bin/tokenburn.js --yes --open
+TOKENBURN_ENDPOINT=https://example.com node packages/cli/bin/tokenburn.js
 
 # end-to-end: builds must exist; starts `next start`, uploads your real logs, compares numbers
-pnpm --filter @pyrometer/web build && pnpm e2e
+pnpm --filter @tokenburn/web build && pnpm e2e
 
 # refresh prices (falls back to the litellm wheel on PyPI if GitHub is unreachable)
 pnpm sync-pricing        # or: node scripts/sync-pricing.mjs --from ./model_prices_and_context_window.json
 ```
 
-The CLI accepts these flags: `--dry-run`, `--yes` or `-y`, `--open`, `--json`, `--endpoint <url>`, `--help` and `--version`. The endpoint defaults to `$PYROMETER_ENDPOINT`, then `http://localhost:3000`. Set `$PYROMETER_HOME` to use a config directory other than `~/.pyrometer`.
+The CLI accepts these flags: `--dry-run`, `--yes` or `-y`, `--open`, `--json`, `--endpoint <url>`, `--help` and `--version`. The endpoint defaults to `$TOKENBURN_ENDPOINT`, then `http://localhost:3000`. Set `$TOKENBURN_HOME` to use a config directory other than `~/.tokenburn`.
 
 The fixtures in `packages/core/test/fixtures` are synthetic. `generate.mjs` produces them by mimicking the real file structures, and they contain no real transcript content.
 
@@ -136,7 +136,7 @@ The fixtures in `packages/core/test/fixtures` are synthetic. `generate.mjs` prod
 
 ```
 packages/core   pure ESM parser, aggregation, pricing, summary, titles (no Node built-ins)
-packages/cli    `pyrometer` bin, zero runtime deps
+packages/cli    `tokenburn` bin, zero runtime deps
 apps/web        Next.js App Router: API routes, /u/[id], OG image
 scripts/        sync-pricing.mjs, e2e.mjs
 ```

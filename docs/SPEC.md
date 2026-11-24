@@ -1,7 +1,7 @@
-# Pyrometer Engineering Standard v1
+# Tokenburn Engineering Standard v1
 
 ## Product
-Pyrometer measures how many AI tokens a person has burned across Claude Code, OpenAI Codex CLI and Gemini CLI, converts it to equivalent API value in USD, and publishes a public flex page with an OG share card.
+Tokenburn measures how many AI tokens a person has burned across Claude Code, OpenAI Codex CLI and Gemini CLI, converts it to equivalent API value in USD, and publishes a public flex page with an OG share card.
 
 ## Hard rules
 1. Privacy: raw logs are parsed locally only. The only data that leaves a machine is the Payload below. No paths, project names, prompts, code, session ids.
@@ -11,7 +11,7 @@ Pyrometer measures how many AI tokens a person has burned across Claude Code, Op
 
 ## Repo layout (pnpm workspace)
 - `packages/core`   pure parser + aggregation + pricing + titles. Exports `createAggregator()`, `parseClaudeLine`, `parseCodexFile`, `parseGeminiFile`, `priceOf(model, usage)`, `PRICING`.
-- `packages/cli`    `npx pyrometer` : scan, print summary + exact payload, ask Y/n, upload, open browser. Flags: `--yes`, `--open`, `--dry-run`, `--json`, `--endpoint`.
+- `packages/cli`    `npx tokenburn` : scan, print summary + exact payload, ask Y/n, upload, open browser. Flags: `--yes`, `--open`, `--dry-run`, `--json`, `--endpoint`.
 - `apps/web`        Next.js App Router: API routes, public page `/u/[id]`, OG image `/u/[id]/opengraph-image`.
 
 ## Log sources
@@ -32,7 +32,7 @@ Strict zod validation; unknown keys rejected; model must match `^[a-z0-9.\-:_/]{
 
 ## Identity
 - `POST /api/v1/profiles` -> `{ id, claimToken }`. id: 8 char base32 slug. claimToken: 32 random bytes, stored hashed (sha256).
-- CLI stores `{ id, claimToken, deviceId }` in `~/.pyrometer/config.json` (mode 600).
+- CLI stores `{ id, claimToken, deviceId }` in `~/.tokenburn/config.json` (mode 600).
 - ingest requires `Authorization: Bearer <claimToken>`.
 
 ## Merge semantics

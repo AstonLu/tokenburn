@@ -10,7 +10,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
   if (!summary) notFound();
   return (
     <main>
-      <h1>Pyrometer /u/{id}</h1>
+      <h1>Tokenburn /u/{id}</h1>
       <pre>{JSON.stringify(summary, null, 2)}</pre>
     </main>
   );
