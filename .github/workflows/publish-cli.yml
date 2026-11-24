@@ -21,6 +21,13 @@ jobs:
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r test
+      - name: Check NPM_TOKEN is set
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then echo "::error::Repository secret NPM_TOKEN is missing or empty (Settings > Secrets and variables > Actions > Repository secrets)"; exit 1; fi
+          echo "NPM_TOKEN is set (${#NODE_AUTH_TOKEN} characters)"
+          npm whoami --registry https://registry.npmjs.org/ || { echo "::error::npm rejected NPM_TOKEN: check it has read and write access to packages"; exit 1; }
       - name: Publish
         working-directory: packages/cli
         run: pnpm publish --access public --no-git-checks
