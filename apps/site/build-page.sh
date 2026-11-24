@@ -19,3 +19,9 @@ PY
   printf '\n</body>\n</html>\n'
 } > public/index.html
 wc -c public/index.html
+# The CLI as one file, served at /cli.mjs so it runs without npm:
+#   curl -fsSL https://tokenburn.astonlu.com/cli.mjs -o /tmp/tokenburn.mjs && node /tmp/tokenburn.mjs --open
+(cd ../../packages/cli && node scripts/vendor-core.mjs >/dev/null)
+npx -y esbuild@0.24.2 ../../packages/cli/bin/tokenburn.js --bundle --platform=node --format=esm --target=node18 --log-level=warning --outfile=public/cli.txt
+wc -c public/cli.txt
+

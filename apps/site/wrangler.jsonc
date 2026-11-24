@@ -9,6 +9,6 @@
   "d1_databases": [
     { "binding": "DB", "database_name": "tokenburn", "database_id": "02009f43-9941-43f8-9875-eb5835dd4822", "migrations_dir": "migrations" }
   ],
-  "rules": [{ "type": "Data", "globs": ["**/*.woff", "**/*.woff2"], "fallthrough": true }, { "type": "Text", "globs": ["**/*.html"], "fallthrough": true }],
+  "rules": [{ "type": "Data", "globs": ["**/*.woff", "**/*.woff2"], "fallthrough": true }, { "type": "Text", "globs": ["**/*.html", "**/*.txt"], "fallthrough": true }],
   "observability": { "enabled": true }
 }

@@ -44,8 +44,9 @@ function build() {
   const L = isL(); wasL = L; setW(L ? 1200 : 390);
   const s = S.sum, mets = S.mets, M = Object.fromEntries(mets.map(m => [m.id, m])), per = `${ymd(s.firstDay)}–${ymd(s.lastDay)}`;
   $('src').innerHTML = `<b>${S.mode === 'profile' ? '公開紀錄' : S.mine ? '我的資料' : '範例資料'}</b>`;
-  $('pick').textContent = S.mode === 'profile' ? '算我的' : S.mine ? '回到範例' : '讀取我的紀錄';
+  $('pick').textContent = S.mode === 'profile' ? '算我的' : S.mine ? '回到範例' : '算我的';
   $('publish').hidden = S.mode !== 'mine';
+  $('pick').classList.toggle('em', S.mode !== 'mine');
   const main = $('main'); let html = '';
   const tk = big(s.totals.tokens);
   setW(L ? 1200 : 390);
@@ -182,7 +183,24 @@ async function ingest(files) {
   scrollTo({ top: 0 }); if (ink) ink.reset(); load(rows, true);
 }
 const dir = $('dir');
-$('pick').onclick = () => { if (S.mode === 'profile') { location.href = '/'; return; } if (S.mine) { scrollTo({ top: 0 }); load(sampleRows(), false); } else dir.click(); };
+// ---------- How to get your own numbers ----------
+const how = $('how');
+const ORIGIN = /^https?:$/.test(location.protocol) ? location.origin : 'https://tokenburn.astonlu.com';
+$('how-ai').textContent = `請在終端機執行下面這行指令，完成後把它印出的網址打開給我：curl -fsSL ${ORIGIN}/cli.mjs -o /tmp/tokenburn.mjs && node /tmp/tokenburn.mjs --yes --open`;
+$('how-cli').textContent = `curl -fsSL ${ORIGIN}/cli.mjs -o /tmp/tokenburn.mjs && node /tmp/tokenburn.mjs --open`;
+function openHow() { how.hidden = false; how.querySelector('[data-copy="how-ai"]').focus(); }
+function closeHow() { how.hidden = true; }
+$('how-close').onclick = closeHow;
+how.addEventListener('click', e => { if (e.target === how) closeHow(); });
+addEventListener('keydown', e => { if (e.key === 'Escape' && !how.hidden) closeHow(); });
+$('how-pick').onclick = () => { closeHow(); dir.click(); };
+how.querySelectorAll('[data-copy]').forEach(btn => btn.onclick = () => {
+  const el = $(btn.dataset.copy), text = el.textContent, label = btn.textContent;
+  const done = ok => { btn.textContent = ok ? '已複製' : '請手動選取'; setTimeout(() => btn.textContent = label, 1600); if (!ok) { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); } };
+  (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => done(true), () => done(false));
+});
+$('pick').onclick = () => { if (S.mode === 'profile') { location.href = '/?how'; return; } if (S.mine) { scrollTo({ top: 0 }); load(sampleRows(), false); } else openHow(); };
+if (/[?&]how\b/.test(location.search)) setTimeout(openHow, 300);
 
 // ---------- Publishing: only daily per-model numbers leave the browser ----------
 const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };

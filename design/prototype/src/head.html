@@ -98,6 +98,13 @@ svg text { stroke:none; }
 .sheet h2 { margin:0 0 10px; font-size:20px; }
 .sheet p { margin:0 0 12px; font-size:15px; font-variant-numeric:tabular-nums; }
 .sheet ul { margin:0 0 20px; padding-left:18px; font-size:14px; color:var(--quiet); line-height:1.7; }
+.sheet.how { max-width:560px; max-height:calc(100vh - 32px); overflow:auto; }
+.way { border-top:1.5px solid var(--line); padding:16px 0; display:grid; gap:10px; justify-items:start; }
+.way h3 { margin:0; font-size:16px; display:flex; align-items:center; gap:8px; }
+.way .tag { font-size:12px; font-weight:700; color:#fff; background:#c23a06; border-radius:999px; padding:2px 8px; }
+.way p { margin:0; font-size:14px; color:var(--quiet); }
+.way code { display:block; width:100%; font-family:var(--mono); font-size:12.5px; background:#f1ede5; border-radius:8px; padding:10px 12px; overflow-wrap:anywhere; user-select:all; }
+.way .row { display:flex; gap:8px; flex-wrap:wrap; }
 .sheet-acts { display:flex; justify-content:flex-end; gap:10px; }
 .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 .em em, b.em em { color:#c23a06; }
@@ -143,6 +150,29 @@ svg text { stroke:none; }
 <main id="main"></main>
 <div class="toast" id="toast" hidden role="status"></div>
 <div class="drop" id="drop" hidden><div>放開以讀取</div></div>
+<div class="sheet-bg" id="how" hidden>
+  <div class="sheet how" role="dialog" aria-modal="true" aria-labelledby="how-t">
+    <h2 id="how-t">算出你的燃燒量</h2>
+    <section class="way rec">
+      <h3>交給你的 AI<span class="tag">最簡單</span></h3>
+      <p>貼到 Claude Code、Codex 或 Cursor 的對話框，允許執行一次，完成後會自動打開你的頁面</p>
+      <code id="how-ai"></code>
+      <button class="btn em" type="button" data-copy="how-ai">複製給 AI 的指令</button>
+    </section>
+    <section class="way">
+      <h3>用瀏覽器選資料夾</h3>
+      <p>在選檔視窗按 ⌘⇧G，貼上這個路徑。只在你的瀏覽器裡計算</p>
+      <code id="how-path">~/.claude/projects</code>
+      <div class="row"><button class="btn" type="button" data-copy="how-path">複製路徑</button><button class="btn em" type="button" id="how-pick">選擇資料夾</button></div>
+    </section>
+    <section class="way">
+      <h3>自己貼進終端機</h3>
+      <code id="how-cli"></code>
+      <button class="btn" type="button" data-copy="how-cli">複製指令</button>
+    </section>
+    <div class="sheet-acts"><button class="btn" type="button" id="how-close">關閉</button></div>
+  </div>
+</div>
 <div class="sheet-bg" id="sheet" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-t">
     <h2 id="sheet-t">公開分享</h2>

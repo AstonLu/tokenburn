@@ -7,6 +7,7 @@ import * as db from './db';
 import { renderOg } from './og';
 import PAGE from '../public/index.html';
 import { PAGE_FONTS } from './pagefonts';
+import CLI from '../public/cli.txt';
 
 export type Env = { DB: D1Database };
 type C = Context<{ Bindings: Env }>;
@@ -187,6 +188,7 @@ app.get('/fonts/:name', (c) => {
   if (!f) return c.notFound();
   return new Response(f, { headers: { 'content-type': 'font/woff2', 'cache-control': 'public, max-age=31536000, immutable', 'access-control-allow-origin': '*' } });
 });
+app.get('/cli.mjs', () => new Response(CLI, { headers: { 'content-type': 'text/javascript; charset=utf-8', 'cache-control': 'public, max-age=300', 'x-content-type-options': 'nosniff' } }));
 app.get('/robots.txt', () => new Response('User-agent: *\nAllow: /\n', { headers: { 'content-type': 'text/plain' } }));
 app.notFound(() => new Response('找不到這個頁面', { status: 404, headers: { 'content-type': 'text/plain; charset=utf-8' } }));
 

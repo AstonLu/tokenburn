@@ -16,3 +16,4 @@ packages/cli/vendor/
 # Cloudflare
 .wrangler/
 apps/site/public/index.html
+apps/site/public/cli.txt
