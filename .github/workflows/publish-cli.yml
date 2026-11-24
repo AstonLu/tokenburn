@@ -1,0 +1,29 @@
+name: Publish CLI to npm
+# Runs when a tag like cli-v0.1.0 is pushed, or by hand from the Actions tab.
+# Needs the repository secret NPM_TOKEN (an npm granular token with read and write on packages).
+on:
+  push:
+    tags: ['cli-v*']
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r test
+      - name: Publish
+        working-directory: packages/cli
+        run: pnpm publish --access public --no-git-checks --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: 'true'
