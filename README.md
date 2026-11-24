@@ -1,5 +1,8 @@
 # Tokenburn
 
+Live at **https://tokenburn.astonlu.com**. Run `npx tokenburn` or open the site and pick your `~/.claude/projects` folder.
+
+
 Tokenburn measures how many AI tokens you have burned across **Claude Code**, **OpenAI Codex CLI** and **Gemini CLI**, converts them to the equivalent API price in USD, and publishes a public profile page with an Open Graph share card.
 
 ```
@@ -121,8 +124,14 @@ TOKENBURN_ENDPOINT=https://example.com node packages/cli/bin/tokenburn.js
 # end-to-end: fresh local D1 + `wrangler dev`, uploads your real logs, compares numbers
 pnpm build && pnpm e2e
 
-# production deploy (needs a Cloudflare API token)
+# production deploy (needs CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID)
 pnpm --filter @tokenburn/site deploy
+
+# browser check of the publish flow (local or production)
+node scripts/ui-check.mjs https://tokenburn.astonlu.com
+
+# after changing page or share-image copy, refresh the subset fonts
+sh apps/site/fetch-page-fonts.sh && sh apps/site/fetch-og-fonts.sh
 
 # refresh prices (falls back to the litellm wheel on PyPI if GitHub is unreachable)
 pnpm sync-pricing        # or: node scripts/sync-pricing.mjs --from ./model_prices_and_context_window.json

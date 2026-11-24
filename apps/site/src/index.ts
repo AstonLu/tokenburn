@@ -6,6 +6,7 @@ import { hashToken, newClaimToken, newProfileId } from './ids';
 import * as db from './db';
 import { renderOg } from './og';
 import PAGE from '../public/index.html';
+import { PAGE_FONTS } from './pagefonts';
 
 export type Env = { DB: D1Database };
 type C = Context<{ Bindings: Env }>;
@@ -181,6 +182,11 @@ app.all('/api/*', (c) => err(c, 404, 'not found'));
 const HTML_HEADERS = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=0, s-maxage=300' };
 app.get('/', () => new Response(PAGE, { headers: HTML_HEADERS }));
 app.get('/index.html', () => new Response(PAGE, { headers: HTML_HEADERS }));
+app.get('/fonts/:name', (c) => {
+  const f = PAGE_FONTS[c.req.param('name')];
+  if (!f) return c.notFound();
+  return new Response(f, { headers: { 'content-type': 'font/woff2', 'cache-control': 'public, max-age=31536000, immutable', 'access-control-allow-origin': '*' } });
+});
 app.get('/robots.txt', () => new Response('User-agent: *\nAllow: /\n', { headers: { 'content-type': 'text/plain' } }));
 app.notFound(() => new Response('找不到這個頁面', { status: 404, headers: { 'content-type': 'text/plain; charset=utf-8' } }));
 

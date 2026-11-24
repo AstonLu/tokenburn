@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
-:root { --paper:#faf8f4; --ink:#1d1b18; --quiet:#7d766a; --line:#d8d1c3; --ember:#ea4a0c;
+:root { --paper:#faf8f4; --ink:#1d1b18; --quiet:#6b645a; --line:#d8d1c3; --ember:#ea4a0c;
   --disp:'Big Shoulders Display','Arial Narrow','Helvetica Neue Condensed',Impact,sans-serif;
   --zh:'Noto Sans TC','PingFang TC','Microsoft JhengHei','WenQuanYi Zen Hei',sans-serif;
   --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
@@ -23,7 +23,7 @@ button { font:inherit; color:inherit; }
 .idx { font-family:var(--mono); font-size:12px; color:var(--quiet); font-variant-numeric:tabular-nums; }
 .btn { border:1.5px solid var(--ink); background:var(--paper); border-radius:999px; height:34px; padding:0 14px; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; }
 .btn:hover { background:var(--ink); color:var(--paper); }
-.btn.em, .acts a.btn.em { background:var(--ember); color:#fff; }
+.btn.em, .acts a.btn.em { background:#c23a06; border-color:#c23a06; color:#fff; }
 .btn:hover, .acts a.btn:hover { background:var(--ink); color:var(--paper); }
 #ink, #veil { position:fixed; inset:0; width:100%; height:100%; display:block; z-index:0; pointer-events:none; }
 #ink { top:52px; height:calc(100% - 52px); }
@@ -99,6 +99,8 @@ svg text { stroke:none; }
 .sheet p { margin:0 0 12px; font-size:15px; font-variant-numeric:tabular-nums; }
 .sheet ul { margin:0 0 20px; padding-left:18px; font-size:14px; color:var(--quiet); line-height:1.7; }
 .sheet-acts { display:flex; justify-content:flex-end; gap:10px; }
+.sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+.em em, b.em em { color:#c23a06; }
 .toast { position:fixed; z-index:40; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:var(--paper); padding:9px 16px; border-radius:999px; font-size:13px; font-variant-numeric:tabular-nums; }
 .drop { position:fixed; inset:0; z-index:30; display:grid; place-items:center; background:rgba(250,248,244,.92); }
 .drop div { border:2px dashed var(--ember); border-radius:10px; padding:44px 52px; font-size:22px; font-weight:900; background:var(--paper); }
@@ -1050,6 +1052,7 @@ window.__P = { setW: w => { CW = w; }, gpuCard, keyboard, taiwan, engineer, at, 
 </script>
 <script>
 var flame = null;
+var FX = { on: false, off: false, slow: 0, frames: 0 };
 (function () {
 'use strict';
 const { C, $, reduce, DAY, iso, ymd, INK, T0, T1, T2, T3, EM, clamp, ease, fmt, esc, hero, box, P, pp, mTop, scenes, setW, gpuCard, keyboard, taiwan, engineer } = window.__P;
@@ -1119,7 +1122,7 @@ function build() {
     </div>
     <div class="models">
       <div class="mbar" role="img" aria-label="各模型 tokens 占比">${s.perModel.map(m => `<i style="flex:${Math.max(m.tokens / totTok, .004)};background:${MCOL[colOf(m.model)]}" title="${esc(m.model)} ${pct(m.tokens / totTok)}"></i>`).join('')}</div>
-      <table><tbody>${s.perModel.map(m => `<tr><td><i class="dot" style="background:${MCOL[colOf(m.model)]}"></i>${esc(m.model)}</td><td title="${m.tokens.toLocaleString('en-US')} tokens · ${pct(m.tokens / totTok)}">${tokS(m.tokens)}</td><td>${usd(m.usd)}</td></tr>`).join('')}</tbody></table>
+      <table><thead class="sr"><tr><th scope="col">模型</th><th scope="col">tokens</th><th scope="col">等效價值</th></tr></thead><tbody>${s.perModel.map(m => `<tr><td><i class="dot" style="background:${MCOL[colOf(m.model)]}"></i>${esc(m.model)}</td><td title="${m.tokens.toLocaleString('en-US')} tokens · ${pct(m.tokens / totTok)}">${tokS(m.tokens)}</td><td>${usd(m.usd)}</td></tr>`).join('')}</tbody></table>
     </div>
     <div class="tiles">${TILE.map(v => { const m = M[v[0]]; return `<a class="tile" href="#sc-${v[0]}" title="${esc(v[3])}"><svg viewBox="0 0 660 440" aria-hidden="true"><g transform="${v[2]}">${v[1]}</g></svg><span class="tt">${SHORT[v[0]](m)}</span><b${v[0] === 'value' ? ' class="em"' : ''}>${fmt(m.value)}<em>${m.unit}</em></b></a>`; }).join('')}</div>
   </div></section>`;
@@ -1139,7 +1142,7 @@ function build() {
   main.innerHTML = html;
   if (flame) { try { flame.destroy(); } catch (e) {} flame = null; }
   const fc = $('flame');
-  if (fc && !reduce && window.PyroFX && PyroFX.supported()) { try { flame = PyroFX.fire(fc, { quality: 'low' }); if (flame) flame.setHeat(.62); } catch (e) { flame = null; } }
+  if (fc && FX.on) { try { flame = PyroFX.fire(fc, { quality: 'low' }); if (flame) flame.setHeat(.62); } catch (e) { flame = null; } }
   S.list.forEach(sc => { sc.el = main.querySelector(`.sc[data-id="${sc.id}"]`); sc.root = sc.el.querySelector('svg'); });
   $('copy').onclick = () => { (navigator.clipboard ? navigator.clipboard.writeText(text + ' ' + shareUrl) : Promise.reject()).then(() => say('已複製'), () => say('無法複製')); };
   S.intro = null;
@@ -1154,9 +1157,28 @@ function load(rows, mine, mode) {
 }
 
 // ---------- Ink between scenes ----------
+// Effects start after the page has loaded and gone idle, and switch themselves off on devices
+// that cannot keep up (sustained slow frames), leaving the static illustrations.
 const cv = $('ink'), veil = $('veil'); let ink = null;
-if (!reduce && window.PyroFX && PyroFX.supported()) { try { ink = PyroFX.ink(cv, { quality: 'auto' }); } catch (e) { ink = null; } }
-if (!ink) { cv.hidden = true; veil.hidden = true; }
+cv.hidden = true; veil.hidden = true;
+function startFX() {
+  if (FX.on || FX.off || reduce || !window.PyroFX || !PyroFX.supported()) return;
+  FX.on = true; FX.slow = 0; FX.frames = 0;
+  try { ink = PyroFX.ink(cv, { quality: 'auto' }); } catch (e) { ink = null; }
+  if (ink) { cv.hidden = false; veil.hidden = false; }
+  const fc = $('flame');
+  if (fc && !flame) { try { flame = PyroFX.fire(fc, { quality: 'low' }); if (flame) flame.setHeat(.62); } catch (e) { flame = null; } }
+}
+function stopFX() {
+  FX.on = false; FX.off = true;
+  try { if (ink) ink.destroy(); } catch (e) {} ink = null;
+  try { if (flame) flame.destroy(); } catch (e) {} flame = null;
+  cv.hidden = true; veil.hidden = true;
+}
+// Ignite on the visitor's first gesture: the first screen paints instantly as still illustrations.
+const IGNITE = ['pointermove', 'pointerdown', 'wheel', 'touchstart', 'keydown', 'scroll'];
+function ignite() { IGNITE.forEach(e => removeEventListener(e, ignite, true)); requestAnimationFrame(startFX); }
+IGNITE.forEach(e => addEventListener(e, ignite, { capture: true, passive: true }));
 function mixOf(s) { const col = m => /opus/.test(m) ? 'ember' : /sonnet/.test(m) ? 'amber' : /haiku/.test(m) ? 'sand' : /gemini/.test(m) ? 'cobalt' : /gpt|codex|^o\d/.test(m) ? 'graphite' : 'ember'; const tot = s.perModel.reduce((a, m) => a + m.tokens, 0) || 1; return s.perModel.map(m => [col(m.model), m.tokens / tot]); }
 const pickInk = () => { let r = Math.random(), a = 0; for (const [c, w] of S.mix || []) { a += w; if (r <= a) return c; } return 'ember'; };
 let lastY = scrollY, movedAt = 0, pourAcc = 0, veilO = 1, fanA = 0, lp = null;
@@ -1165,7 +1187,8 @@ document.addEventListener('pointerleave', () => { lp = null; });
 
 let last = performance.now();
 function frame(t) {
-  const dt = Math.min(64, t - last); last = t;
+  const raw = t - last, dt = Math.min(64, raw); last = t;
+  if (FX.on && !document.hidden) { FX.frames++; if (FX.frames > 3) { if (raw > 50) FX.slow++; else FX.slow = Math.max(0, FX.slow - 1); } if (FX.slow > 8) stopFX(); }
   const vh = innerHeight; let cur = 0;
   if (S.intro) { const f = reduce ? 1 : ease((t - S.intro.t0) / 1500); S.intro.set(f); if (f >= 1) S.intro = null; }
   S.list.forEach((sc, i) => {
@@ -1267,7 +1290,7 @@ addEventListener('dragover', e => e.preventDefault());
 addEventListener('drop', async e => { e.preventDefault(); const it = [...(e.dataTransfer?.items || [])].map(i => i.webkitGetAsEntry && i.webkitGetAsEntry()).filter(Boolean); const out = []; if (it.length) for (const x of it) await walk(x, '', out); else out.push(...(e.dataTransfer?.files || [])); ingest(out); });
 let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (isL() !== wasL) build(); if (ink) ink.resize(); }, 150); });
 
-window.__pyro = { load, sampleRows };  // test hook: load(rows, mine)
+window.__pyro = { load, sampleRows, fx: () => ({ ...FX, ink: !!ink, flame: !!flame }) };  // test hook: load(rows, mine)
 if (BOOT) { S.profileId = BOOT.id; load(BOOT.rows, false, 'profile'); } else load(sampleRows(), false);
 requestAnimationFrame(frame);
 })();
