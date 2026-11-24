@@ -139,8 +139,11 @@ app.get('/api/v1/profiles/:id', async (c) => {
 app.get('/u/:id/og.png', async (c) => {
   const p = await loadProfile(c.env, c.req.param('id'));
   if (!p) return c.notFound();
-  const png = await renderOg(p.summary, computeMetaphors(p.summary));
-  return new Response(png, { headers: { 'content-type': 'image/png', 'cache-control': 'public, max-age=600' } });
+  const img = await renderOg(p.summary, computeMetaphors(p.summary));
+  const h = new Headers(img.headers);
+  h.set('content-type', 'image/png');
+  h.set('cache-control', 'public, max-age=600');
+  return new Response(img.body, { status: img.status, headers: h });
 });
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch] as string);

@@ -13,7 +13,8 @@
   "dependencies": {
     "@tokenburn/core": "workspace:*",
     "hono": "4.10.4",
-    "zod": "4.6.7"
+    "zod": "4.6.7",
+    "workers-og": "0.0.27"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "4.20251121.0",
